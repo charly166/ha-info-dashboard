@@ -1,0 +1,31 @@
+{
+  "name": "ha-info-dashboard",
+  "version": "0.1.0",
+  "description": "Informations-Dashboard für Home Assistant",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charly166/ha-info-dashboard.git"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/charly166/ha-info-dashboard/issues"
+  },
+  "homepage": "https://github.com/charly166/ha-info-dashboard#readme",
+  "dependencies": {
+    "home-assistant-js-websocket": "^9.7.1",
+    "preact": "^11.0.1"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "private": true
+}
