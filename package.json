@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "description": "Informations-Dashboard für Home Assistant",
   "scripts": {
-    "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --host",
-    "typecheck": "tsc --noEmit",
-    "build:panel": "tsc --noEmit && vite build -c vite.panel.config.ts",
-    "build:all": "npm run build && npm run build:panel"
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

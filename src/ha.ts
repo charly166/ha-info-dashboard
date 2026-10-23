@@ -1,56 +1,31 @@
 import { useEffect, useState } from 'preact/hooks';
-import {
-  createConnection,
-  createLongLivedTokenAuth,
-  subscribeEntities,
-  ERR_INVALID_AUTH,
-  type Connection,
-  type HassEntities,
-} from 'home-assistant-js-websocket';
-import type { Credentials } from './config';
+import type { Connection } from 'home-assistant-js-websocket';
+import type { DashboardConfig } from './types';
 
-export type Status = 'connecting' | 'ready' | 'disconnected' | 'error';
+const DOMAIN = 'ha_info_dashboard';
 
-export interface HassState {
-  status: Status;
-  error?: string;
-  connection?: Connection;
-  entities: HassEntities;
-}
-
-export function useHass(creds: Credentials): HassState {
-  const [state, setState] = useState<HassState>({ status: 'connecting', entities: {} });
+/** Konfiguration der Integration; wird bei jeder Änderung neu geliefert. */
+export function useDashboardConfig(connection: Connection | undefined): DashboardConfig | undefined {
+  const [config, setConfig] = useState<DashboardConfig>();
 
   useEffect(() => {
-    let conn: Connection | undefined;
+    if (!connection) return;
     let unsub: (() => void) | undefined;
     let cancelled = false;
-
-    (async () => {
-      try {
-        const auth = createLongLivedTokenAuth(creds.url, creds.token);
-        conn = await createConnection({ auth });
-        if (cancelled) return conn.close();
-        conn.addEventListener('ready', () => setState((s) => ({ ...s, status: 'ready' })));
-        conn.addEventListener('disconnected', () => setState((s) => ({ ...s, status: 'disconnected' })));
-        unsub = subscribeEntities(conn, (entities) =>
-          setState({ status: 'ready', connection: conn, entities }),
-        );
-      } catch (e) {
-        if (cancelled) return;
-        const error = e === ERR_INVALID_AUTH ? 'Token ungültig' : 'Verbindung zu Home Assistant fehlgeschlagen';
-        setState({ status: 'error', error, entities: {} });
-      }
-    })();
-
+    connection
+      .subscribeMessage<DashboardConfig>(setConfig, { type: `${DOMAIN}/subscribe_config` })
+      .then((u) => {
+        if (cancelled) u();
+        else unsub = u;
+      })
+      .catch(() => setConfig({ configured: false, blocks: [] }));
     return () => {
       cancelled = true;
       unsub?.();
-      conn?.close();
     };
-  }, [creds.url, creds.token]);
+  }, [connection]);
 
-  return state;
+  return config;
 }
 
 export interface ForecastDay {
@@ -62,11 +37,14 @@ export interface ForecastDay {
   precipitation_probability?: number;
 }
 
-export function useDailyForecast(connection: Connection | undefined, entityId: string): ForecastDay[] {
+export function useDailyForecast(connection: Connection | undefined, entityId: string | undefined): ForecastDay[] {
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
 
   useEffect(() => {
-    if (!connection) return;
+    if (!connection || !entityId) {
+      setForecast([]);
+      return;
+    }
     let unsub: (() => void) | undefined;
     let cancelled = false;
     connection

@@ -1,12 +1,14 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
-import { entities as cfg } from './config';
+import type { IndoorConfig, StationConfig } from './types';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown', '']);
+
+const entity = (all: HassEntities, id?: string): HassEntity | undefined => (id ? all[id] : undefined);
 
 export interface Reading {
   value: number;
   unit: string;
-  /** true, wenn der Wert aus dem DWD-Fallback stammt */
+  /** true, wenn der Wert aus dem Wetterbericht stammt statt von der Messstation */
   fallback: boolean;
 }
 
@@ -30,13 +32,6 @@ function weatherAttr(w: HassEntity | undefined, key: string, unit: string): Read
 const SECTORS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 const SECTOR_LABEL: Record<string, string> = { n: 'N', ne: 'NO', e: 'O', se: 'SO', s: 'S', sw: 'SW', w: 'W', nw: 'NW' };
 
-export interface Wind {
-  speed?: Reading;
-  /** Himmelsrichtung, aus der der Wind weht (0 = Nord) */
-  degrees?: number;
-  label?: string;
-}
-
 function windDirection(raw: string | number | undefined): { degrees: number; label: string } | undefined {
   if (raw === undefined) return undefined;
   const n = Number(raw);
@@ -48,31 +43,26 @@ function windDirection(raw: string | number | undefined): { degrees: number; lab
   return idx < 0 ? undefined : { degrees: idx * 45, label: SECTOR_LABEL[SECTORS[idx]] };
 }
 
-export function resolveOutdoor(all: HassEntities) {
-  const w = all[cfg.weather];
-  const o = cfg.outdoor;
-  const dirEntity = all[o.windDirection];
+/** Außenwerte: Messstation, wo vorhanden, sonst der Wetterbericht. */
+export function resolveOutdoor(all: HassEntities, station: StationConfig = {}, weatherId?: string) {
+  const w = entity(all, weatherId);
+  const dirEntity = entity(all, station.wind_direction);
   const dir = windDirection(dirEntity && !UNAVAILABLE.has(dirEntity.state) ? dirEntity.state : w?.attributes.wind_bearing);
-  const wind: Wind = {
-    speed: reading(all[o.windSpeed], weatherAttr(w, 'wind_speed', 'km/h')),
-    degrees: dir?.degrees,
-    label: dir?.label,
-  };
   return {
-    temperature: reading(all[o.temperature], weatherAttr(w, 'temperature', '°C')),
-    humidity: reading(all[o.humidity], weatherAttr(w, 'humidity', '%')),
-    rain: reading(all[o.rain]),
-    rainToday: reading(all[o.rainToday]),
-    wind,
+    temperature: reading(entity(all, station.temperature), weatherAttr(w, 'temperature', '°C')),
+    humidity: reading(entity(all, station.humidity), weatherAttr(w, 'humidity', '%')),
+    rain: reading(entity(all, station.rain)),
+    rainToday: reading(entity(all, station.rain_today)),
+    windSpeed: reading(entity(all, station.wind_speed), weatherAttr(w, 'wind_speed', 'km/h')),
+    windLabel: dir?.label,
   };
 }
 
-export function resolveIndoor(all: HassEntities) {
-  const i = cfg.indoor;
+export function resolveIndoor(all: HassEntities, cfg: IndoorConfig = {}) {
   return {
-    temperature: reading(all[i.temperature]),
-    humidity: reading(all[i.humidity]),
-    co2: reading(all[i.co2]),
+    temperature: reading(entity(all, cfg.temperature)),
+    humidity: reading(entity(all, cfg.humidity)),
+    co2: reading(entity(all, cfg.co2)),
   };
 }
 
@@ -87,9 +77,9 @@ export interface Warning {
   end: Date;
 }
 
-export function resolveWarnings(all: HassEntities): Warning[] {
+export function resolveWarnings(all: HassEntities, ids: string[] = []): Warning[] {
   const out: Warning[] = [];
-  for (const id of cfg.warnings) {
+  for (const id of ids) {
     const a = all[id]?.attributes;
     const count = Number(a?.warning_count ?? 0);
     for (let n = 1; n <= count; n++) {
@@ -108,6 +98,33 @@ export function resolveWarnings(all: HassEntities): Warning[] {
     }
   }
   return out.sort((a, b) => b.level - a.level || a.start.getTime() - b.start.getTime());
+}
+
+export interface Pollen {
+  name: string;
+  today: number;
+  tomorrow: number;
+  inTwoDays: number;
+  description: string;
+}
+
+const POLLEN_NAMES: Record<string, string> = { Graeser: 'Gräser', Beifuss: 'Beifuß' };
+
+export function resolvePollen(all: HassEntities, ids: string[] = []): Pollen[] {
+  const out: Pollen[] = [];
+  for (const id of ids) {
+    const e = all[id];
+    if (!e) continue;
+    const raw = /Pollenflug\s+(.+?)(\s+\d+)?$/.exec(String(e.attributes.friendly_name ?? ''))?.[1] ?? id.split('.')[1];
+    out.push({
+      name: POLLEN_NAMES[raw] ?? raw,
+      today: num(e) ?? 0,
+      tomorrow: Number(e.attributes.state_tomorrow ?? 0),
+      inTwoDays: Number(e.attributes.state_in_2_days ?? 0),
+      description: String(e.attributes.state_today_desc ?? ''),
+    });
+  }
+  return out.sort((a, b) => b.today - a.today || b.tomorrow - a.tomorrow || a.name.localeCompare(b.name, 'de'));
 }
 
 const CONDITIONS: Record<string, [string, string]> = {

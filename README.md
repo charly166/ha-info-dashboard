@@ -8,47 +8,53 @@ Informations-Dashboard für Home Assistant: eine statische Single-Page-App (Vite
 
 ## Funktionen
 
-- **Wetter:** aktuelle Werte der eigenen Wetterstation (Temperatur, Luftfeuchte, Regen, Wind), 5-Tage-Prognose vom DWD. Fehlt ein Messwert, springt die Anzeige auf die DWD-Station zurück (Kennzeichnung „DWD“).
-- **Wetterwarnungen:** DWD-Warnungen mit Zeitraum und Handlungsempfehlung.
-- **Innenraum:** Temperatur, Luftfeuchte und CO₂.
+Das Dashboard besteht aus **Bausteinen**, die du in Home Assistant einrichtest. Der Assistent erkennt passende Entitäten selbst und schlägt sie vor. Bausteine vom Typ **Wetter**:
+
+| Baustein | Inhalt | Erkennung |
+|---|---|---|
+| Wetterbericht | aktuelle Lage und 5-Tage-Prognose | `weather.*` (bevorzugt DWD) |
+| Wetterstation | Temperatur, Luftfeuchte, Regen, Wind | Netatmo, Ecowitt |
+| Innen | Temperatur, Luftfeuchte, CO₂ | Hauptmodul der Wetterstation |
+| Warnmeldungen | DWD-Warnungen mit Zeitraum und Handlungsempfehlung | `dwd_weather_warnings` |
+| Pollen | DWD-Pollenflug-Gefahrenindex für heute bis übermorgen | `dwd_pollenflug` |
+
+Alle Wetter-Bausteine erscheinen zusammen in einer Karte. Fehlt ein Messwert der Wetterstation, springt die Anzeige auf den Wetterbericht zurück (Kennzeichnung „DWD“). Das Raster zeigt 1 Spalte (Smartphone), 3 (Wand-Tablet) oder höchstens 4 (Browser).
 
 ## Installation über HACS
 
-1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Dashboard**).
-2. **HA Info Dashboard** installieren.
-3. Falls HACS die Ressource nicht selbst anlegt: unter **Einstellungen → Dashboards → Ressourcen** (Erweiterten Modus im Profil aktivieren) `/hacsfiles/ha-info-dashboard/ha-info-dashboard.js` als **JavaScript-Modul** hinzufügen und die Seite hart neu laden (Strg+F5).
-4. Als Seitenleisten-Panel einbinden, in `configuration.yaml`:
+1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Integration**) und **HA Info Dashboard** herunterladen.
+2. Home Assistant neu starten.
+3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → HA Info Dashboard.** Der Assistent zeigt die erkannten Bausteine; du wählst aus, was eingerichtet werden soll.
+4. Fertig: in der Seitenleiste erscheint der Eintrag **Info**. Es sind weder `configuration.yaml` noch Dashboard-Ressourcen nötig.
 
-```yaml
-panel_custom:
-  - name: ha-info-dashboard
-    sidebar_title: Info
-    sidebar_icon: mdi:view-dashboard
-    module_url: /hacsfiles/ha-info-dashboard/ha-info-dashboard.js
-```
+Bausteine änderst du unter **Einstellungen → Geräte & Dienste → HA Info Dashboard** (Zahnrad am Baustein → Neu konfigurieren) und fügst sie dort mit **Baustein hinzufügen** hinzu. Änderungen erscheinen sofort im Dashboard.
 
-Alternativ lässt sich das Element als Karte `custom:ha-info-dashboard` in einem Dashboard mit Ansichtstyp **Panel** nutzen. Zugangsdaten sind nicht nötig, das Dashboard nutzt die Anmeldung von Home Assistant (auch in der Companion-App).
+### Umstieg von Version 0.1
 
-## Entitäten anpassen
-
-Die Zuordnung der Messgrößen zu Entitäten steht in [`src/config.ts`](src/config.ts). Für eine andere Wetterstation (z. B. Ecowitt) genügt es, dort die Entity-IDs auszutauschen und neu zu bauen.
+Version 0.1 war ein reines Frontend-Paket. Vor dem Umstieg bitte entfernen:
+- das HACS-Paket **HA Info Dashboard** (Typ Dashboard) und seine Dashboard-Ressource,
+- den `panel_custom`-Eintrag in der `configuration.yaml`.
 
 ## Entwicklung
 
-Voraussetzung ist Node.js ≥ 20.
+Voraussetzungen: Node.js ≥ 20 und [uv](https://docs.astral.sh/uv/).
 
 ```bash
 npm install
-npm run dev          # eigenständige App mit Zugriffstoken-Abfrage
-npm run build:panel  # HACS-Paket: dist/ha-info-dashboard.js
-npm run build        # eigenständige App: dist-app/
+npm run build        # baut das Frontend nach custom_components/ha_info_dashboard/static/
+
+uv venv --python 3.14 .venv
+uv pip install --python .venv/bin/python -r requirements_test.txt
+.venv/bin/python -m pytest
 ```
 
-Die eigenständige App fragt beim ersten Start nach der Adresse von Home Assistant und einem langlebigen Zugriffstoken (HA → Profil → Sicherheit). Beides wird nur im `localStorage` des Browsers gespeichert. Wird sie über HTTPS ausgeliefert, muss auch Home Assistant über HTTPS erreichbar sein.
+Aufbau:
+- `custom_components/ha_info_dashboard/`: die Integration (Config-Flow mit Erkennung, Bausteine als Untereinträge, Panel, WebSocket-Schnittstelle).
+- `src/`: das Frontend (Preact, TypeScript). Es bekommt `hass` von Home Assistant und die Bausteine per WebSocket von der Integration.
 
 ## Release
 
-Beim Veröffentlichen eines GitHub-Releases baut ein Workflow `ha-info-dashboard.js` und hängt die Datei an das Release an. HACS lädt sie von dort.
+Beim Veröffentlichen eines GitHub-Releases baut ein Workflow das Frontend, setzt die Version aus dem Tag in die `manifest.json` und hängt `ha_info_dashboard.zip` an. HACS lädt das Paket von dort.
 
 ## Lizenz
 

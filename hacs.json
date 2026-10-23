@@ -1,5 +1,7 @@
 {
   "name": "HA Info Dashboard",
-  "render_readme": true,
-  "filename": "ha-info-dashboard.js"
+  "homeassistant": "2025.3.0",
+  "zip_release": true,
+  "filename": "ha_info_dashboard.zip",
+  "render_readme": true
 }

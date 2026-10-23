@@ -1,0 +1,196 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Info Dashboard",
+        "description": "These building blocks were detected in your Home Assistant:\n\n{detected}\n\nChoose which ones to set up. You can change them or add more later.",
+        "data": {
+          "weather_report": "Weather report",
+          "weather_station": "Weather station",
+          "indoor": "Indoor",
+          "warnings": "Warnings",
+          "pollen": "Pollen"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HA Info Dashboard is already set up."
+    }
+  },
+  "config_subentries": {
+    "weather_report": {
+      "initiate_flow": {
+        "user": "Weather: add weather report",
+        "reconfigure": "Edit weather report"
+      },
+      "entry_type": "Weather report",
+      "step": {
+        "user": {
+          "title": "Weather report",
+          "description": "Weather entity for current conditions and forecast (e.g. DWD).",
+          "data": {
+            "weather": "Weather entity"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Weather report",
+          "description": "Weather entity for current conditions and forecast (e.g. DWD).",
+          "data": {
+            "weather": "Weather entity"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
+    },
+    "weather_station": {
+      "initiate_flow": {
+        "user": "Weather: add weather station",
+        "reconfigure": "Edit weather station"
+      },
+      "entry_type": "Weather station",
+      "step": {
+        "user": {
+          "title": "Weather station",
+          "description": "Readings from your own weather station (e.g. Netatmo or Ecowitt). Missing values fall back to the weather report.",
+          "data": {
+            "temperature": "Temperature (outdoor)",
+            "humidity": "Humidity (outdoor)",
+            "rain": "Precipitation (current)",
+            "rain_today": "Precipitation (today)",
+            "wind_speed": "Wind speed",
+            "wind_direction": "Wind direction"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Weather station",
+          "description": "Readings from your own weather station (e.g. Netatmo or Ecowitt). Missing values fall back to the weather report.",
+          "data": {
+            "temperature": "Temperature (outdoor)",
+            "humidity": "Humidity (outdoor)",
+            "rain": "Precipitation (current)",
+            "rain_today": "Precipitation (today)",
+            "wind_speed": "Wind speed",
+            "wind_direction": "Wind direction"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
+    },
+    "indoor": {
+      "initiate_flow": {
+        "user": "Weather: add indoor",
+        "reconfigure": "Edit indoor"
+      },
+      "entry_type": "Indoor",
+      "step": {
+        "user": {
+          "title": "Indoor",
+          "description": "Indoor climate from your weather station's main module.",
+          "data": {
+            "temperature": "Temperature",
+            "humidity": "Humidity",
+            "co2": "Carbon dioxide"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Indoor",
+          "description": "Indoor climate from your weather station's main module.",
+          "data": {
+            "temperature": "Temperature",
+            "humidity": "Humidity",
+            "co2": "Carbon dioxide"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
+    },
+    "warnings": {
+      "initiate_flow": {
+        "user": "Weather: add warnings",
+        "reconfigure": "Edit warnings"
+      },
+      "entry_type": "Warnings",
+      "step": {
+        "user": {
+          "title": "Warnings",
+          "description": "DWD weather warning sensors (current warning level).",
+          "data": {
+            "entities": "Warning sensors"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Warnings",
+          "description": "DWD weather warning sensors (current warning level).",
+          "data": {
+            "entities": "Warning sensors"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
+    },
+    "pollen": {
+      "initiate_flow": {
+        "user": "Weather: add pollen",
+        "reconfigure": "Edit pollen"
+      },
+      "entry_type": "Pollen",
+      "step": {
+        "user": {
+          "title": "Pollen",
+          "description": "DWD pollen forecast index sensors.",
+          "data": {
+            "entities": "Pollen sensors"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Pollen",
+          "description": "DWD pollen forecast index sensors.",
+          "data": {
+            "entities": "Pollen sensors"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
+    }
+  }
+}

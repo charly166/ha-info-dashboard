@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,8 +17,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build:panel
-      - name: Datei an das Release anhängen
+      - run: npm run build
+      - name: Version aus dem Tag übernehmen
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          python3 - "$version" <<'PY'
+          import json, sys
+          path = "custom_components/ha_info_dashboard/manifest.json"
+          manifest = json.load(open(path))
+          manifest["version"] = sys.argv[1]
+          json.dump(manifest, open(path, "w"), indent=2, ensure_ascii=False)
+          PY
+      - name: Integration packen und anhängen
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/ha-info-dashboard.js --clobber
+        run: |
+          (cd custom_components/ha_info_dashboard && zip -r ../../ha_info_dashboard.zip . -x "__pycache__/*" "*.pyc")
+          gh release upload "$GITHUB_REF_NAME" ha_info_dashboard.zip --clobber

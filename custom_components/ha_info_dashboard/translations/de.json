@@ -1,0 +1,196 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HA Info Dashboard",
+        "description": "Folgende Bausteine wurden in deiner Home Assistant erkannt:\n\n{detected}\n\nWähle, welche eingerichtet werden sollen. Später kannst du Bausteine ändern oder weitere hinzufügen.",
+        "data": {
+          "weather_report": "Wetterbericht",
+          "weather_station": "Wetterstation",
+          "indoor": "Innen",
+          "warnings": "Warnmeldungen",
+          "pollen": "Pollen"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "HA Info Dashboard ist bereits eingerichtet."
+    }
+  },
+  "config_subentries": {
+    "weather_report": {
+      "initiate_flow": {
+        "user": "Wetter: Wetterbericht hinzufügen",
+        "reconfigure": "Wetterbericht ändern"
+      },
+      "entry_type": "Wetterbericht",
+      "step": {
+        "user": {
+          "title": "Wetterbericht",
+          "description": "Wetter-Entität für aktuelle Lage und Prognose (z. B. DWD).",
+          "data": {
+            "weather": "Wetter-Entität"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Wetterbericht",
+          "description": "Wetter-Entität für aktuelle Lage und Prognose (z. B. DWD).",
+          "data": {
+            "weather": "Wetter-Entität"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
+    },
+    "weather_station": {
+      "initiate_flow": {
+        "user": "Wetter: Wetterstation hinzufügen",
+        "reconfigure": "Wetterstation ändern"
+      },
+      "entry_type": "Wetterstation",
+      "step": {
+        "user": {
+          "title": "Wetterstation",
+          "description": "Messwerte deiner eigenen Wetterstation (z. B. Netatmo oder Ecowitt). Fehlende Werte werden aus dem Wetterbericht ergänzt.",
+          "data": {
+            "temperature": "Temperatur (außen)",
+            "humidity": "Luftfeuchtigkeit (außen)",
+            "rain": "Niederschlag (aktuell)",
+            "rain_today": "Niederschlag (heute)",
+            "wind_speed": "Windgeschwindigkeit",
+            "wind_direction": "Windrichtung"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Wetterstation",
+          "description": "Messwerte deiner eigenen Wetterstation (z. B. Netatmo oder Ecowitt). Fehlende Werte werden aus dem Wetterbericht ergänzt.",
+          "data": {
+            "temperature": "Temperatur (außen)",
+            "humidity": "Luftfeuchtigkeit (außen)",
+            "rain": "Niederschlag (aktuell)",
+            "rain_today": "Niederschlag (heute)",
+            "wind_speed": "Windgeschwindigkeit",
+            "wind_direction": "Windrichtung"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
+    },
+    "indoor": {
+      "initiate_flow": {
+        "user": "Wetter: Innenraum hinzufügen",
+        "reconfigure": "Innenraum ändern"
+      },
+      "entry_type": "Innen",
+      "step": {
+        "user": {
+          "title": "Innen",
+          "description": "Raumklima aus deinem Wetterstations-Hauptmodul.",
+          "data": {
+            "temperature": "Temperatur",
+            "humidity": "Luftfeuchtigkeit",
+            "co2": "Kohlendioxid"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Innen",
+          "description": "Raumklima aus deinem Wetterstations-Hauptmodul.",
+          "data": {
+            "temperature": "Temperatur",
+            "humidity": "Luftfeuchtigkeit",
+            "co2": "Kohlendioxid"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
+    },
+    "warnings": {
+      "initiate_flow": {
+        "user": "Wetter: Warnmeldungen hinzufügen",
+        "reconfigure": "Warnmeldungen ändern"
+      },
+      "entry_type": "Warnmeldungen",
+      "step": {
+        "user": {
+          "title": "Warnmeldungen",
+          "description": "Sensoren der DWD-Warnmeldungen (aktuelle Warnstufe).",
+          "data": {
+            "entities": "Warnsensoren"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Warnmeldungen",
+          "description": "Sensoren der DWD-Warnmeldungen (aktuelle Warnstufe).",
+          "data": {
+            "entities": "Warnsensoren"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
+    },
+    "pollen": {
+      "initiate_flow": {
+        "user": "Wetter: Pollenflug hinzufügen",
+        "reconfigure": "Pollenflug ändern"
+      },
+      "entry_type": "Pollen",
+      "step": {
+        "user": {
+          "title": "Pollen",
+          "description": "Sensoren des DWD-Pollenflug-Gefahrenindex.",
+          "data": {
+            "entities": "Pollensensoren"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "Pollen",
+          "description": "Sensoren des DWD-Pollenflug-Gefahrenindex.",
+          "data": {
+            "entities": "Pollensensoren"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
+    }
+  }
+}

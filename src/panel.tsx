@@ -12,8 +12,8 @@ interface Hass {
 const TAG = 'ha-info-dashboard';
 
 /**
- * Wird von Home Assistant als Panel (`panel_custom`) oder als Karte in einem
- * Dashboard mit Ansichtstyp „Panel“ eingebunden und bekommt `hass` von HA gereicht.
+ * Wird von Home Assistant als Panel eingebunden (die Integration registriert es)
+ * und bekommt `hass` von HA gereicht.
  */
 class HaInfoDashboard extends HTMLElement {
   private root = this.attachShadow({ mode: 'open' });
@@ -32,13 +32,6 @@ class HaInfoDashboard extends HTMLElement {
   set hass(hass: Hass) {
     this._hass = hass;
     this.update();
-  }
-
-  /** Von Lovelace aufgerufen, wenn das Element als Karte genutzt wird. */
-  setConfig() {}
-
-  getCardSize() {
-    return 8;
   }
 
   private update() {
