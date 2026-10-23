@@ -15,8 +15,9 @@ Informations-Dashboard für Home Assistant: eine statische Single-Page-App (Vite
 ## Installation über HACS
 
 1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Dashboard**).
-2. **HA Info Dashboard** installieren und Home Assistant neu laden.
-3. Als Seitenleisten-Panel einbinden, in `configuration.yaml`:
+2. **HA Info Dashboard** installieren.
+3. Falls HACS die Ressource nicht selbst anlegt: unter **Einstellungen → Dashboards → Ressourcen** (Erweiterten Modus im Profil aktivieren) `/hacsfiles/ha-info-dashboard/ha-info-dashboard.js` als **JavaScript-Modul** hinzufügen und die Seite hart neu laden (Strg+F5).
+4. Als Seitenleisten-Panel einbinden, in `configuration.yaml`:
 
 ```yaml
 panel_custom:
