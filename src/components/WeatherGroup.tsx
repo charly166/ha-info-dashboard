@@ -1,8 +1,10 @@
 import type { Connection, HassEntities } from 'home-assistant-js-websocket';
 import { useDailyForecast } from '../ha';
 import type { Block, IndoorConfig, StationConfig } from '../types';
+import { Sky, kindOf } from './Sky';
 import {
   condition,
+  timeOfDay,
   resolveIndoor,
   resolveOutdoor,
   resolvePollen,
@@ -25,6 +27,29 @@ function Metric({ label, value, fallback, tone }: { label: string; value: string
       <span class={`metric-value ${tone ?? ''}`}>
         {value}
         {fallback && <sup title="Wert aus dem Wetterbericht, Messstation nicht verfügbar"> DWD</sup>}
+      </span>
+    </div>
+  );
+}
+
+function Detail({
+  label,
+  value,
+  fallback,
+  extra,
+}: {
+  label: string;
+  value: string;
+  fallback?: boolean;
+  extra?: preact.ComponentChildren;
+}) {
+  return (
+    <div class="detail">
+      <span class="detail-label">{label}</span>
+      <span class="detail-value">
+        {value}
+        {fallback && <sup title="Wert aus dem Wetterbericht, Messstation nicht verfügbar"> DWD</sup>}
+        {extra}
       </span>
     </div>
   );
@@ -113,63 +138,101 @@ export function WeatherGroup({
   const co2 = co2Tone(indoor.co2?.value);
   const raining = (o.rain?.value ?? 0) > 0;
 
+  const today = forecast[0];
+  const place = (w?.attributes.friendly_name as string | undefined) ?? '';
+  const showSky = Boolean(weatherId || station);
+  const apparent = o.apparent;
+
   return (
     <section class="card weather-group">
-      <Warnings warnings={warnings} />
-
-      {(weatherId || station) && (
-        <header class="weather-now">
-          <span class="weather-icon" aria-hidden="true">{cond.icon}</span>
-          <div>
-            <div class="weather-temp">{fmt(o.temperature, 1)}</div>
-            <div class="weather-cond">{weatherId ? cond.label : 'Außen'}</div>
-          </div>
-        </header>
+      {warnings.length > 0 && (
+        <div class="pad">
+          <Warnings warnings={warnings} />
+        </div>
       )}
 
-      <div class="metrics">
-        <Metric label="Luftfeuchte" value={fmt(o.humidity)} fallback={o.humidity?.fallback} />
-        <Metric
-          label="Wind"
-          value={`${fmt(o.windSpeed)}${o.windLabel ? ` · ${o.windLabel}` : ''}`}
-          fallback={o.windSpeed?.fallback}
-        />
-        {station?.rain_today && <Metric label="Regen heute" value={fmt(o.rainToday, 1)} />}
-        {raining && <Metric label="Regen aktuell" value={fmt(o.rain, 1)} />}
-      </div>
+      {showSky && (
+        <Sky kind={kindOf(w?.state)} tod={timeOfDay(entities)}>
+          <div class="sky-top">
+            <span>{place}</span>
+            <span>{new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+          </div>
 
-      {forecast.length > 0 && (
-        <ul class="forecast">
-          {forecast.map((d) => {
-            const c = condition(d.condition);
-            return (
-              <li key={d.datetime} title={c.label}>
-                <span class="fc-day">{new Date(d.datetime).toLocaleDateString('de-DE', { weekday: 'short' })}</span>
-                <span class="fc-icon" aria-hidden="true">{c.icon}</span>
-                <span class="fc-temp">
-                  {d.temperature !== undefined ? `${Math.round(d.temperature)}°` : '–'}
-                  {d.templow !== undefined && <small> {Math.round(d.templow)}°</small>}
+          <div class="sky-main">
+            <div class="sky-temp">{fmt(o.temperature, 1).replace('\u202f', '')}</div>
+            <div class="sky-cond">
+              {weatherId ? cond.label : 'Außen'}
+              {today?.temperature !== undefined && (
+                <span>
+                  {' · '}
+                  {today.templow !== undefined ? `${Math.round(today.templow)}° / ` : ''}
+                  {Math.round(today.temperature)}°
                 </span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      {pollenIds && <PollenRow pollen={pollen} />}
-
-      {indoorCfg && (
-        <section class="section">
-          <h2>Innen</h2>
-          <div class="metrics">
-            {indoorCfg.temperature && <Metric label="Temperatur" value={fmt(indoor.temperature, 1)} />}
-            {indoorCfg.humidity && <Metric label="Luftfeuchte" value={fmt(indoor.humidity)} />}
-            {indoorCfg.co2 && (
-              <Metric label="CO₂" value={`${fmt(indoor.co2)}${co2.label ? ` · ${co2.label}` : ''}`} tone={co2.tone} />
-            )}
+              )}
+            </div>
           </div>
-        </section>
+
+          <div class="sky-details">
+            {apparent && <Detail label="Gefühlt" value={fmt(apparent, 1)} />}
+            <Detail label="Luftfeuchte" value={fmt(o.humidity)} fallback={o.humidity?.fallback} />
+            <Detail
+              label="Wind"
+              value={fmt(o.windSpeed)}
+              fallback={o.windSpeed?.fallback}
+              extra={
+                o.windLabel && (
+                  <span class="wind-dir">
+                    {o.windDegrees !== undefined && (
+                      <i class="wind-arrow" style={{ transform: `rotate(${o.windDegrees + 180}deg)` }}>↑</i>
+                    )}
+                    {o.windLabel}
+                  </span>
+                )
+              }
+            />
+            {station?.rain_today && <Detail label="Regen heute" value={fmt(o.rainToday, 1)} />}
+            {raining && <Detail label="Regen aktuell" value={fmt(o.rain, 1)} />}
+          </div>
+
+          {forecast.length > 0 && (
+            <ul class="forecast">
+              {forecast.map((d) => {
+                const c = condition(d.condition);
+                return (
+                  <li key={d.datetime} title={c.label}>
+                    <span class="fc-day">{new Date(d.datetime).toLocaleDateString('de-DE', { weekday: 'short' })}</span>
+                    <span class="fc-icon" aria-hidden="true">{c.icon}</span>
+                    <span class="fc-temp">
+                      {d.temperature !== undefined ? `${Math.round(d.temperature)}°` : '–'}
+                      {d.templow !== undefined && <small> {Math.round(d.templow)}°</small>}
+                    </span>
+                    {d.precipitation_probability !== undefined && d.precipitation_probability > 0 && (
+                      <span class="fc-rain">{d.precipitation_probability}&nbsp;%</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Sky>
       )}
+
+      <div class="pad">
+        {pollenIds && <PollenRow pollen={pollen} />}
+
+        {indoorCfg && (
+          <section class="section">
+            <h2>Innen</h2>
+            <div class="metrics">
+              {indoorCfg.temperature && <Metric label="Temperatur" value={fmt(indoor.temperature, 1)} />}
+              {indoorCfg.humidity && <Metric label="Luftfeuchte" value={fmt(indoor.humidity)} />}
+              {indoorCfg.co2 && (
+                <Metric label="CO₂" value={`${fmt(indoor.co2)}${co2.label ? ` · ${co2.label}` : ''}`} tone={co2.tone} />
+              )}
+            </div>
+          </section>
+        )}
+      </div>
     </section>
   );
 }

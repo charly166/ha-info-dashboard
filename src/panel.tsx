@@ -1,13 +1,6 @@
 import { render } from 'preact';
-import type { Connection, HassEntities } from 'home-assistant-js-websocket';
-import { DashboardView } from './components/DashboardView';
+import { DashboardView, type PanelHass } from './components/DashboardView';
 import styles from './style.css?inline';
-
-/** Der Teil des `hass`-Objekts, den das Dashboard braucht. */
-interface Hass {
-  states: HassEntities;
-  connection: Connection;
-}
 
 const TAG = 'ha-info-dashboard';
 
@@ -17,7 +10,8 @@ const TAG = 'ha-info-dashboard';
  */
 class HaInfoDashboard extends HTMLElement {
   private root = this.attachShadow({ mode: 'open' });
-  private _hass?: Hass;
+  private _hass?: PanelHass;
+  private _narrow = false;
 
   constructor() {
     super();
@@ -29,15 +23,21 @@ class HaInfoDashboard extends HTMLElement {
     this.root.append(mount);
   }
 
-  set hass(hass: Hass) {
+  set hass(hass: PanelHass) {
     this._hass = hass;
+    this.update();
+  }
+
+  /** HA meldet, ob die Seitenleiste ausgeblendet ist (Smartphone, schmales Fenster). */
+  set narrow(narrow: boolean) {
+    this._narrow = narrow;
     this.update();
   }
 
   private update() {
     const mount = this.root.querySelector('.root');
     if (mount && this._hass) {
-      render(<DashboardView entities={this._hass.states} connection={this._hass.connection} />, mount);
+      render(<DashboardView hass={this._hass} narrow={this._narrow} />, mount);
     }
   }
 }

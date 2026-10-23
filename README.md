@@ -18,7 +18,7 @@ Das Dashboard besteht aus **Bausteinen**, die du in Home Assistant einrichtest. 
 | Warnmeldungen | DWD-Warnungen mit Zeitraum und Handlungsempfehlung | `dwd_weather_warnings` |
 | Pollen | DWD-Pollenflug-Gefahrenindex für heute bis übermorgen | `dwd_pollenflug` |
 
-Alle Wetter-Bausteine erscheinen zusammen in einer Karte. Fehlt ein Messwert der Wetterstation, springt die Anzeige auf den Wetterbericht zurück (Kennzeichnung „DWD“). Das Raster zeigt 1 Spalte (Smartphone), 3 (Wand-Tablet) oder höchstens 4 (Browser).
+Alle Wetter-Bausteine erscheinen zusammen in einer Karte. Der Wetterbericht zeigt einen animierten Himmel, der sich an Wetterlage und Tageszeit (Sonnenhöhe von `sun.sun`) anpasst: Sonne, Mond und Sterne, ziehende Wolken, Regen, Schnee, Nebel und Gewitter. Bei aktivierter Einstellung „Bewegung reduzieren“ des Geräts stehen die Animationen still. Farben und Hintergrund folgen dem Home-Assistant-Theme und damit der Profil-Einstellung (Auto, Hell, Dunkel). Fehlt ein Messwert der Wetterstation, springt die Anzeige auf den Wetterbericht zurück (Kennzeichnung „DWD“). Das Raster zeigt 1 Spalte (Smartphone), 3 (Wand-Tablet) oder höchstens 4 (Browser).
 
 ## Installation über HACS
 

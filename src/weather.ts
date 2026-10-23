@@ -32,6 +32,16 @@ function weatherAttr(w: HassEntity | undefined, key: string, unit: string): Read
 const SECTORS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 const SECTOR_LABEL: Record<string, string> = { n: 'N', ne: 'NO', e: 'O', se: 'SO', s: 'S', sw: 'SW', w: 'W', nw: 'NW' };
 
+export type TimeOfDay = 'day' | 'twilight' | 'night';
+
+/** Tageszeit aus der Sonnenhöhe (sun.sun), ersatzweise aus der Uhrzeit. */
+export function timeOfDay(all: HassEntities, now = new Date()): TimeOfDay {
+  const elevation = Number(all['sun.sun']?.attributes.elevation);
+  if (Number.isFinite(elevation)) return elevation > 6 ? 'day' : elevation > -6 ? 'twilight' : 'night';
+  const h = now.getHours();
+  return h >= 8 && h < 18 ? 'day' : h >= 6 && h < 20 ? 'twilight' : 'night';
+}
+
 function windDirection(raw: string | number | undefined): { degrees: number; label: string } | undefined {
   if (raw === undefined) return undefined;
   const n = Number(raw);
@@ -55,6 +65,8 @@ export function resolveOutdoor(all: HassEntities, station: StationConfig = {}, w
     rainToday: reading(entity(all, station.rain_today)),
     windSpeed: reading(entity(all, station.wind_speed), weatherAttr(w, 'wind_speed', 'km/h')),
     windLabel: dir?.label,
+    windDegrees: dir?.degrees,
+    apparent: weatherAttr(w, 'apparent_temperature', '°C'),
   };
 }
 

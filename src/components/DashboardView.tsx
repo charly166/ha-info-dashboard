@@ -5,18 +5,34 @@ import { WeatherGroup } from './WeatherGroup';
 
 const SETTINGS_URL = '/config/integrations/integration/ha_info_dashboard';
 
-export function DashboardView({ entities, connection }: { entities: HassEntities; connection?: Connection }) {
+export interface PanelHass {
+  states: HassEntities;
+  connection: Connection;
+}
+
+export function DashboardView({ hass, narrow }: { hass: PanelHass; narrow: boolean }) {
+  const { states: entities, connection } = hass;
   const config = useDashboardConfig(connection);
 
-  if (!config) return <p class="muted center">Lade Konfiguration …</p>;
+  const topbar = (
+    <header class="topbar">
+      <ha-menu-button hass={hass} narrow={narrow} />
+      <span>HA Info Dashboard</span>
+    </header>
+  );
+
+  if (!config) return <>{topbar}<p class="muted center">Lade Konfiguration …</p></>;
 
   if (!config.configured || config.blocks.length === 0) {
     return (
-      <p class="muted center">
-        Noch keine Bausteine eingerichtet.
-        <br />
-        <a href={SETTINGS_URL}>Einstellungen → Geräte &amp; Dienste → HA Info Dashboard</a> → „Baustein hinzufügen“.
-      </p>
+      <>
+        {topbar}
+        <p class="muted center">
+          Noch keine Bausteine eingerichtet.
+          <br />
+          <a href={SETTINGS_URL}>Einstellungen → Geräte &amp; Dienste → HA Info Dashboard</a> → „Baustein hinzufügen“.
+        </p>
+      </>
     );
   }
 
@@ -24,10 +40,13 @@ export function DashboardView({ entities, connection }: { entities: HassEntities
   for (const block of config.blocks) groups.set(block.group, [...(groups.get(block.group) ?? []), block]);
 
   return (
-    <main class="grid">
-      {groups.has('weather') && (
-        <WeatherGroup blocks={groups.get('weather')!} entities={entities} connection={connection} />
-      )}
-    </main>
+    <>
+      {topbar}
+      <main class="grid">
+        {groups.has('weather') && (
+          <WeatherGroup blocks={groups.get('weather')!} entities={entities} connection={connection} />
+        )}
+      </main>
+    </>
   );
 }
