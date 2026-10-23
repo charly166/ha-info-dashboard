@@ -40,13 +40,13 @@ export function DashboardView({ hass, narrow }: { hass: PanelHass; narrow: boole
   for (const block of config.blocks) groups.set(block.group, [...(groups.get(block.group) ?? []), block]);
 
   return (
-    <>
+    <div class={`anim-${config.settings?.animation ?? 'on'}`}>
       {topbar}
       <main class="grid">
         {groups.has('weather') && (
           <WeatherGroup blocks={groups.get('weather')!} entities={entities} connection={connection} />
         )}
       </main>
-    </>
+    </div>
   );
 }

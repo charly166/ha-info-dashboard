@@ -192,5 +192,25 @@
         "reconfigure_successful": "Block saved."
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "description": "“Always on” animates even when the device asks to reduce motion. “Automatic” respects that system setting.",
+        "data": {
+          "animation": "Sky animation"
+        }
+      }
+    }
+  },
+  "selector": {
+    "animation": {
+      "options": {
+        "on": "Always on",
+        "auto": "Automatic (respect system setting)",
+        "off": "Off"
+      }
+    }
   }
 }

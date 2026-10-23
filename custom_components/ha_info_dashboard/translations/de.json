@@ -192,5 +192,25 @@
         "reconfigure_successful": "Baustein gespeichert."
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen",
+        "description": "„Immer an“ zeigt die Animation auch dann, wenn das Gerät „Bewegung reduzieren“ meldet. „Automatisch“ beachtet diese Systemeinstellung.",
+        "data": {
+          "animation": "Animation des Himmels"
+        }
+      }
+    }
+  },
+  "selector": {
+    "animation": {
+      "options": {
+        "on": "Immer an",
+        "auto": "Automatisch (Systemeinstellung beachten)",
+        "off": "Aus"
+      }
+    }
   }
 }

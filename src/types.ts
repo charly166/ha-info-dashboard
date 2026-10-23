@@ -10,9 +10,15 @@ export interface Block {
   data: Record<string, unknown>;
 }
 
+export interface DashboardSettings {
+  /** on: immer, auto: folgt „Bewegung reduzieren“, off: nie */
+  animation: 'on' | 'auto' | 'off';
+}
+
 export interface DashboardConfig {
   configured: boolean;
   blocks: Block[];
+  settings?: DashboardSettings;
 }
 
 export interface StationConfig {

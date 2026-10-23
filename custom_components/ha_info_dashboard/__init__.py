@@ -16,6 +16,8 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 
 from .const import (
+    ANIMATION_ON,
+    CONF_ANIMATION,
     DOMAIN,
     PANEL_ELEMENT,
     PANEL_ICON,
@@ -44,7 +46,8 @@ def build_config(hass: HomeAssistant) -> dict[str, Any]:
         for entry in entries
         for subentry in entry.subentries.values()
     ]
-    return {"configured": bool(entries), "blocks": blocks}
+    animation = entries[0].options.get(CONF_ANIMATION, ANIMATION_ON) if entries else ANIMATION_ON
+    return {"configured": bool(entries), "blocks": blocks, "settings": {"animation": animation}}
 
 
 @websocket_api.websocket_command({vol.Required("type"): f"{DOMAIN}/subscribe_config"})

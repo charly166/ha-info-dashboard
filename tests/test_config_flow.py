@@ -132,7 +132,11 @@ async def test_websocket_unconfigured(hass, hass_ws_client):
     client = await hass_ws_client(hass)
     await client.send_json({"id": 1, "type": f"{DOMAIN}/subscribe_config"})
     await client.receive_json()
-    assert (await client.receive_json())["event"] == {"configured": False, "blocks": []}
+    assert (await client.receive_json())["event"] == {
+        "configured": False,
+        "blocks": [],
+        "settings": {"animation": "on"},
+    }
 
 
 async def test_unload_removes_panel(home):
@@ -141,3 +145,19 @@ async def test_unload_removes_panel(home):
     with patch("custom_components.ha_info_dashboard.frontend.async_remove_panel") as remove:
         assert await home.config_entries.async_unload(entry.entry_id)
     remove.assert_called_once_with(home, "info-dashboard")
+
+
+async def test_options_flow_sets_animation_and_pushes_it(home, hass_ws_client):
+    await _setup(home)
+    client = await hass_ws_client(home)
+    await client.send_json({"id": 1, "type": f"{DOMAIN}/subscribe_config"})
+    await client.receive_json()
+    assert (await client.receive_json())["event"]["settings"] == {"animation": "on"}
+
+    entry = home.config_entries.async_entries(DOMAIN)[0]
+    result = await home.config_entries.options.async_init(entry.entry_id)
+    assert result["type"] is FlowResultType.FORM
+    result = await home.config_entries.options.async_configure(result["flow_id"], {"animation": "auto"})
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await home.async_block_till_done()
+    assert (await client.receive_json())["event"]["settings"] == {"animation": "auto"}

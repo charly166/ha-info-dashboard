@@ -34,3 +34,9 @@ SUBENTRY_TITLES: dict[str, str] = {
     WARNINGS: "Warnmeldungen",
     POLLEN: "Pollen",
 }
+
+CONF_ANIMATION = "animation"
+ANIMATION_ON = "on"
+ANIMATION_AUTO = "auto"
+ANIMATION_OFF = "off"
+ANIMATION_OPTIONS = [ANIMATION_ON, ANIMATION_AUTO, ANIMATION_OFF]

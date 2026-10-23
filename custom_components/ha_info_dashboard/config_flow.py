@@ -10,15 +10,25 @@ import voluptuous as vol
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
+    OptionsFlow,
     ConfigFlowResult,
     ConfigSubentryData,
     ConfigSubentryFlow,
     SubentryFlowResult,
 )
 from homeassistant.core import callback
-from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig
+from homeassistant.helpers.selector import (
+    EntitySelector,
+    EntitySelectorConfig,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
 
 from .const import (
+    ANIMATION_OPTIONS,
+    ANIMATION_ON,
+    CONF_ANIMATION,
     DOMAIN,
     INDOOR,
     POLLEN,
@@ -118,10 +128,36 @@ def _make_flow(subentry_type: str) -> type[BlockSubentryFlow]:
 SUBENTRY_FLOWS: dict[str, type[ConfigSubentryFlow]] = {t: _make_flow(t) for t in SPECS}
 
 
+class HaInfoDashboardOptionsFlow(OptionsFlow):
+    """Allgemeine Einstellungen des Dashboards."""
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+        current = self.config_entry.options.get(CONF_ANIMATION, ANIMATION_ON)
+        schema = vol.Schema(
+            {
+                vol.Required(CONF_ANIMATION, default=current): SelectSelector(
+                    SelectSelectorConfig(
+                        options=ANIMATION_OPTIONS,
+                        translation_key=CONF_ANIMATION,
+                        mode=SelectSelectorMode.DROPDOWN,
+                    )
+                )
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=schema)
+
+
 class HaInfoDashboardConfigFlow(ConfigFlow, domain=DOMAIN):
     """Einmalige Einrichtung; erkannte Bausteine werden direkt mit angelegt."""
 
     VERSION = 1
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        return HaInfoDashboardOptionsFlow()
 
     @classmethod
     @callback
