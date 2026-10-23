@@ -3,5 +3,6 @@ import preact from '@preact/preset-vite';
 
 export default defineConfig({
   base: './',
+  build: { outDir: 'dist-app' },
   plugins: [preact()],
 });

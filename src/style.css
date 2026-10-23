@@ -1,4 +1,5 @@
-:root {
+:root,
+:host {
   --bg: #16181c;
   --card: #1f2227;
   --border: #2d3138;
@@ -13,8 +14,12 @@
 
 * { box-sizing: border-box; }
 
-body {
-  margin: 0;
+:host { display: block; }
+
+body { margin: 0; background: var(--bg); }
+
+.root {
+  min-height: 100vh;
   background: var(--bg);
   color: var(--text);
   font: 16px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

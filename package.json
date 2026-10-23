@@ -6,7 +6,9 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:panel": "tsc --noEmit && vite build -c vite.panel.config.ts",
+    "build:all": "npm run build && npm run build:panel"
   },
   "repository": {
     "type": "git",

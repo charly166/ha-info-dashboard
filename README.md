@@ -12,28 +12,42 @@ Informations-Dashboard für Home Assistant: eine statische Single-Page-App (Vite
 - **Wetterwarnungen:** DWD-Warnungen mit Zeitraum und Handlungsempfehlung.
 - **Innenraum:** Temperatur, Luftfeuchte und CO₂.
 
-## Einrichtung
+## Installation über HACS
+
+1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Dashboard**).
+2. **HA Info Dashboard** installieren und Home Assistant neu laden.
+3. Als Seitenleisten-Panel einbinden, in `configuration.yaml`:
+
+```yaml
+panel_custom:
+  - name: ha-info-dashboard
+    sidebar_title: Info
+    sidebar_icon: mdi:view-dashboard
+    module_url: /hacsfiles/ha-info-dashboard/ha-info-dashboard.js
+```
+
+Alternativ lässt sich das Element als Karte `custom:ha-info-dashboard` in einem Dashboard mit Ansichtstyp **Panel** nutzen. Zugangsdaten sind nicht nötig, das Dashboard nutzt die Anmeldung von Home Assistant (auch in der Companion-App).
+
+## Entitäten anpassen
+
+Die Zuordnung der Messgrößen zu Entitäten steht in [`src/config.ts`](src/config.ts). Für eine andere Wetterstation (z. B. Ecowitt) genügt es, dort die Entity-IDs auszutauschen und neu zu bauen.
+
+## Entwicklung
 
 Voraussetzung ist Node.js ≥ 20.
 
 ```bash
 npm install
-npm run dev
+npm run dev          # eigenständige App mit Zugriffstoken-Abfrage
+npm run build:panel  # HACS-Paket: dist/ha-info-dashboard.js
+npm run build        # eigenständige App: dist-app/
 ```
 
-Beim ersten Start fragt das Dashboard nach der Adresse von Home Assistant und einem langlebigen Zugriffstoken (HA → Profil → Sicherheit). Beides wird nur im `localStorage` des Browsers gespeichert.
+Die eigenständige App fragt beim ersten Start nach der Adresse von Home Assistant und einem langlebigen Zugriffstoken (HA → Profil → Sicherheit). Beides wird nur im `localStorage` des Browsers gespeichert. Wird sie über HTTPS ausgeliefert, muss auch Home Assistant über HTTPS erreichbar sein.
 
-### Entitäten anpassen
+## Release
 
-Die Zuordnung der Messgrößen zu Entitäten steht in [`src/config.ts`](src/config.ts). Für eine andere Wetterstation (z. B. Ecowitt) genügt es, dort die Entity-IDs auszutauschen.
-
-### Bereitstellen
-
-```bash
-npm run build
-```
-
-Den Inhalt von `dist/` kopierst du z. B. nach `/config/www/ha-info-dashboard/`. Das Dashboard ist dann unter `http://<ha-adresse>:8123/local/ha-info-dashboard/` erreichbar. Wird die Seite über HTTPS ausgeliefert, muss auch Home Assistant über HTTPS erreichbar sein.
+Beim Veröffentlichen eines GitHub-Releases baut ein Workflow `ha-info-dashboard.js` und hängt die Datei an das Release an. HACS lädt sie von dort.
 
 ## Lizenz
 
