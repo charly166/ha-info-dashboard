@@ -223,24 +223,27 @@ export function WeatherGroup({
         )}
 
         {forecast.length > 0 && (
-          <ul class="forecast">
-            {forecast.map((d) => {
-              const c = condition(d.condition);
-              return (
-                <li key={d.datetime} title={c.label}>
-                  <span class="fc-day">{new Date(d.datetime).toLocaleDateString('de-DE', { weekday: 'short' })}</span>
-                  <span class="fc-icon" aria-hidden="true">{c.icon}</span>
-                  <span class="fc-temp">
-                    {d.temperature !== undefined ? `${Math.round(d.temperature)}°` : '–'}
-                    {d.templow !== undefined && <small> {Math.round(d.templow)}°</small>}
-                  </span>
-                  {d.precipitation_probability !== undefined && d.precipitation_probability > 0 && (
-                    <span class="fc-rain">{d.precipitation_probability}&nbsp;%</span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+          <section class="panel">
+            <h2>Vorhersage kommende Tage</h2>
+            <ul class="forecast">
+              {forecast.map((d) => {
+                const c = condition(d.condition);
+                return (
+                  <li key={d.datetime} title={c.label}>
+                    <span class="fc-day">{new Date(d.datetime).toLocaleDateString('de-DE', { weekday: 'short' })}</span>
+                    <span class="fc-icon" aria-hidden="true">{c.icon}</span>
+                    <span class="fc-temp">
+                      {d.temperature !== undefined ? `${Math.round(d.temperature)}°` : '–'}
+                      {d.templow !== undefined && <small> {Math.round(d.templow)}°</small>}
+                    </span>
+                    {d.precipitation_probability !== undefined && d.precipitation_probability > 0 && (
+                      <span class="fc-rain">{d.precipitation_probability}&nbsp;%</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         )}
 
         {pollenIds && <PollenRow pollen={pollen} />}

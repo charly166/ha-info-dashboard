@@ -150,7 +150,7 @@ small { color: var(--hid-muted); font-weight: 400; }
 .fc-icon { font-size: 1.5rem; }
 .fc-temp { font-weight: 500; }
 .fc-temp small { color: inherit; opacity: 0.7; }
-.panel .forecast.hourly { background: none; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
+.panel .forecast { background: none; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
 .fc-rain { font-size: 0.7rem; opacity: 0.8; }
 
 .sun {
