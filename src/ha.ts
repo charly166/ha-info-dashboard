@@ -37,7 +37,13 @@ export interface ForecastDay {
   precipitation_probability?: number;
 }
 
-export function useDailyForecast(connection: Connection | undefined, entityId: string | undefined): ForecastDay[] {
+export type ForecastType = 'daily' | 'hourly';
+
+export function useForecast(
+  connection: Connection | undefined,
+  entityId: string | undefined,
+  type: ForecastType = 'daily',
+): ForecastDay[] {
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
 
   useEffect(() => {
@@ -50,7 +56,7 @@ export function useDailyForecast(connection: Connection | undefined, entityId: s
     connection
       .subscribeMessage<{ forecast: ForecastDay[] }>((msg) => setForecast(msg.forecast ?? []), {
         type: 'weather/subscribe_forecast',
-        forecast_type: 'daily',
+        forecast_type: type,
         entity_id: entityId,
       })
       .then((u) => {
@@ -62,7 +68,9 @@ export function useDailyForecast(connection: Connection | undefined, entityId: s
       cancelled = true;
       unsub?.();
     };
-  }, [connection, entityId]);
+  }, [connection, entityId, type]);
 
   return forecast;
 }
+
+export const useDailyForecast = (c: Connection | undefined, id: string | undefined) => useForecast(c, id, 'daily');

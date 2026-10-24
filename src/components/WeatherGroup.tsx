@@ -1,5 +1,5 @@
 import type { Connection, HassEntities } from 'home-assistant-js-websocket';
-import { useDailyForecast } from '../ha';
+import { useDailyForecast, useForecast } from '../ha';
 import type { Block, IndoorConfig, StationConfig } from '../types';
 import { Sky, kindOf } from './Sky';
 import {
@@ -18,6 +18,14 @@ const fmt = (r: Reading | undefined, digits = 0) =>
   r ? `${r.value.toLocaleString('de-DE', { maximumFractionDigits: digits })} ${r.unit}` : '–';
 
 const WARNING_LEVELS = ['', 'Wetterwarnung', 'Markante Wetterwarnung', 'Unwetterwarnung', 'Extreme Unwetterwarnung'];
+const hour = (iso: string) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+/** Die laufende Stunde und die folgenden; vergangene Stunden fallen weg. */
+function currentAndNext<T extends { datetime: string }>(items: T[], count: number): T[] {
+  const start = Date.now() - 60 * 60 * 1000;
+  return items.filter((i) => new Date(i.datetime).getTime() > start).slice(0, count);
+}
+
 const time = (d: Date) => d.toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 
 function Metric({ label, value, fallback, tone }: { label: string; value: string; fallback?: boolean; tone?: string }) {
@@ -132,6 +140,7 @@ export function WeatherGroup({
   const cond = condition(w?.state);
   const o = resolveOutdoor(entities, station, weatherId);
   const forecast = useDailyForecast(connection, weatherId).slice(0, 5);
+  const hourly = currentAndNext(useForecast(connection, weatherId, 'hourly'), 5);
   const warnings = resolveWarnings(entities, warningIds);
   const pollen = resolvePollen(entities, pollenIds);
   const indoor = resolveIndoor(entities, indoorCfg);
@@ -190,6 +199,27 @@ export function WeatherGroup({
               {raining && <Detail label="Regen aktuell" value={fmt(o.rain, 1)} />}
             </div>
           </>
+        )}
+
+        {hourly.length > 0 && (
+          <section class="panel">
+            <h2>Heutige Vorhersage</h2>
+            <ul class="forecast hourly">
+              {hourly.map((h, i) => {
+                const c = condition(h.condition);
+                return (
+                  <li key={h.datetime} title={c.label}>
+                    <span class="fc-day">{i === 0 ? 'Jetzt' : hour(h.datetime)}</span>
+                    <span class="fc-icon" aria-hidden="true">{c.icon}</span>
+                    <span class="fc-temp">{h.temperature !== undefined ? `${Math.round(h.temperature)}°` : '–'}</span>
+                    {h.precipitation_probability !== undefined && h.precipitation_probability > 0 && (
+                      <span class="fc-rain">{h.precipitation_probability}&nbsp;%</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         )}
 
         {forecast.length > 0 && (
