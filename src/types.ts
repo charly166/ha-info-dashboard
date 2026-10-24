@@ -1,6 +1,6 @@
 /** Konfiguration, die die Integration per WebSocket liefert. */
 
-export type BlockType = 'weather_report' | 'weather_station' | 'indoor' | 'warnings' | 'pollen';
+export type BlockType = 'weather_report' | 'weather_station' | 'indoor' | 'warnings' | 'pollen' | 'calendar';
 
 export interface Block {
   id: string;

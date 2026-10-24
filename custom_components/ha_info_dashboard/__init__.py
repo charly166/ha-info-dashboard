@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -13,10 +15,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.loader import async_get_integration
+from homeassistant.util import dt as dt_util
 
 from .const import (
     ANIMATION_ON,
+    CALENDAR,
     CONF_ANIMATION,
     DOMAIN,
     PANEL_ELEMENT,
@@ -27,6 +32,8 @@ from .const import (
     SUBENTRY_GROUPS,
     URL_BASE,
 )
+
+_LOGGER = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
 MODULE_FILE = "ha-info-dashboard.js"
@@ -64,8 +71,59 @@ def ws_subscribe_config(hass: HomeAssistant, connection: websocket_api.ActiveCon
     forward()
 
 
+def _iso(value: Any) -> str:
+    return value.isoformat() if isinstance(value, (date, datetime)) else str(value)
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): f"{DOMAIN}/calendar_events",
+        vol.Required("entities"): [str],
+        vol.Required("days"): vol.All(int, vol.Range(min=1, max=31)),
+    }
+)
+@websocket_api.async_response
+async def ws_calendar_events(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
+    """Termine der eingerichteten Kalender ab heute 0 Uhr für die nächsten `days` Tage."""
+    allowed = {
+        entity_id
+        for block in build_config(hass)["blocks"]
+        if block["type"] == CALENDAR
+        for entity_id in block["data"].get("entities", [])
+    }
+    start = dt_util.start_of_local_day()
+    events: list[dict[str, Any]] = []
+    for entity_id in dict.fromkeys(e for e in msg["entities"] if e in allowed):
+        try:
+            response = await hass.services.async_call(
+                "calendar",
+                "get_events",
+                {
+                    "entity_id": entity_id,
+                    "start_date_time": start,
+                    "end_date_time": start + timedelta(days=msg["days"]),
+                },
+                blocking=True,
+                return_response=True,
+            )
+        except HomeAssistantError as err:  # ein nicht erreichbarer Kalender darf die anderen nicht blockieren
+            _LOGGER.warning("Kalender %s nicht lesbar: %s", entity_id, err)
+            continue
+        for event in response.get(entity_id, {}).get("events", []):
+            events.append(
+                {
+                    "entity_id": entity_id,
+                    "summary": event.get("summary", ""),
+                    "start": _iso(event["start"]),
+                    "end": _iso(event.get("end", event["start"])),
+                }
+            )
+    connection.send_result(msg["id"], events)
+
+
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     websocket_api.async_register_command(hass, ws_subscribe_config)
+    websocket_api.async_register_command(hass, ws_calendar_events)
     await hass.http.async_register_static_paths(
         [StaticPathConfig(URL_BASE, str(STATIC_DIR), cache_headers=False)]
     )

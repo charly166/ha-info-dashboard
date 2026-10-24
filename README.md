@@ -20,6 +20,17 @@ Das Dashboard besteht aus **Bausteinen**, die du in Home Assistant einrichtest. 
 
 Alle Wetter-Bausteine erscheinen zusammen in einer Karte. Der Wetterbericht zeigt einen animierten Himmel, der sich an Wetterlage und Tageszeit (Sonnenhöhe von `sun.sun`) anpasst: Sonne, Mond und Sterne, ziehende Wolken, Regen, Schnee, Nebel und Gewitter. Der Himmel liegt hinter der gesamten Wetter-Karte. Unter **Einstellungen → Geräte & Dienste → HA Info Dashboard → Konfigurieren** lässt sich die Animation auf „Immer an“ (Standard), „Automatisch“ (folgt der Systemeinstellung „Bewegung reduzieren“) oder „Aus“ stellen. Farben und Hintergrund folgen dem Home-Assistant-Theme und damit der Profil-Einstellung (Auto, Hell, Dunkel). Fehlt ein Messwert der Wetterstation, springt die Anzeige auf den Wetterbericht zurück (Kennzeichnung „DWD“). Das Raster zeigt 1 Spalte (Smartphone), 3 (Wand-Tablet) oder höchstens 4 (Browser).
 
+### Kalender-Bausteine
+
+Unter **Baustein hinzufügen → Kalender** wählst du zuerst die Art und danach die vorhandene Entität. Erkannte Bausteine werden bei der Ersteinrichtung vorgeschlagen. Jede Karte erscheint nur, wenn es etwas anzuzeigen gibt.
+
+| Art | Quelle | Anzeige |
+|---|---|---|
+| Geburtstage | Kalender (z. B. iCal, Google) | die kommenden 3 Tage |
+| Müllkalender | Kalender (z. B. Waste Collection Schedule) | die kommenden 7 Tage, Symbol je Tonne |
+| Pakete | HACS-Erweiterung [Paket Tracker](https://github.com/SoerenKaiser99/parcel_tracker) (Sensoren „Pakete unterwegs“ und „Pakete zugestellt heute“) | alle offenen Pakete und heute zugestellte |
+| Fußball-Liga | HACS-Erweiterung [HA Liga Tracker](https://github.com/charly166/ha-ligatracker) (Sensor „Spieltage“ je Liga) | der nächste Spieltag |
+
 ## Installation über HACS
 
 1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Integration**) und **HA Info Dashboard** herunterladen.

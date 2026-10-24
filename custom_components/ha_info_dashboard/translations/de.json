@@ -9,7 +9,11 @@
           "weather_station": "Wetterstation",
           "indoor": "Innen",
           "warnings": "Warnmeldungen",
-          "pollen": "Pollen"
+          "pollen": "Pollen",
+          "birthdays": "Geburtstage",
+          "waste": "Müllkalender",
+          "parcels": "Pakete (Paket Tracker)",
+          "league": "Fußball-Liga (HA Liga Tracker)"
         }
       }
     },
@@ -191,6 +195,50 @@
         "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
         "reconfigure_successful": "Baustein gespeichert."
       }
+    },
+    "calendar": {
+      "initiate_flow": {
+        "user": "Kalender: Baustein hinzufügen",
+        "reconfigure": "Kalender-Baustein ändern"
+      },
+      "entry_type": "Kalender",
+      "step": {
+        "user": {
+          "title": "Art des Kalenders",
+          "description": "Welcher Baustein soll eingerichtet werden?",
+          "data": {
+            "kind": "Art"
+          },
+          "data_description": {}
+        },
+        "entities": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Kalender",
+            "open": "Offene Pakete (Sensor „Pakete unterwegs“)",
+            "delivered": "Heute zugestellt (Sensor „Pakete zugestellt heute“)"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Kalender",
+            "open": "Offene Pakete (Sensor „Pakete unterwegs“)",
+            "delivered": "Heute zugestellt (Sensor „Pakete zugestellt heute“)"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Bitte mindestens eine Entität auswählen."
+      },
+      "abort": {
+        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "reconfigure_successful": "Baustein gespeichert."
+      }
     }
   },
   "options": {
@@ -210,6 +258,14 @@
         "on": "Immer an",
         "auto": "Automatisch (Systemeinstellung beachten)",
         "off": "Aus"
+      }
+    },
+    "calendar_kind": {
+      "options": {
+        "birthdays": "Geburtstage",
+        "waste": "Müllkalender",
+        "parcels": "Pakete (Paket Tracker)",
+        "league": "Fußball-Liga (HA Liga Tracker)"
       }
     }
   }

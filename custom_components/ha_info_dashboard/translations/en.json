@@ -9,7 +9,11 @@
           "weather_station": "Weather station",
           "indoor": "Indoor",
           "warnings": "Warnings",
-          "pollen": "Pollen"
+          "pollen": "Pollen",
+          "birthdays": "Birthdays",
+          "waste": "Waste calendar",
+          "parcels": "Parcels (Paket Tracker)",
+          "league": "Football league (HA Liga Tracker)"
         }
       }
     },
@@ -191,6 +195,50 @@
         "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
         "reconfigure_successful": "Block saved."
       }
+    },
+    "calendar": {
+      "initiate_flow": {
+        "user": "Calendar: add block",
+        "reconfigure": "Edit calendar block"
+      },
+      "entry_type": "Calendar",
+      "step": {
+        "user": {
+          "title": "Kind of calendar",
+          "description": "Which block do you want to set up?",
+          "data": {
+            "kind": "Kind"
+          },
+          "data_description": {}
+        },
+        "entities": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Calendars",
+            "open": "Open parcels (sensor “Pakete unterwegs”)",
+            "delivered": "Delivered today (sensor “Pakete zugestellt heute”)"
+          },
+          "data_description": {}
+        },
+        "reconfigure": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Calendars",
+            "open": "Open parcels (sensor “Pakete unterwegs”)",
+            "delivered": "Delivered today (sensor “Pakete zugestellt heute”)"
+          },
+          "data_description": {}
+        }
+      },
+      "error": {
+        "no_entity": "Please select at least one entity."
+      },
+      "abort": {
+        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "reconfigure_successful": "Block saved."
+      }
     }
   },
   "options": {
@@ -210,6 +258,14 @@
         "on": "Always on",
         "auto": "Automatic (respect system setting)",
         "off": "Off"
+      }
+    },
+    "calendar_kind": {
+      "options": {
+        "birthdays": "Birthdays",
+        "waste": "Waste calendar",
+        "parcels": "Parcels (Paket Tracker)",
+        "league": "Football league (HA Liga Tracker)"
       }
     }
   }

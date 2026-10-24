@@ -19,7 +19,22 @@ INDOOR = "indoor"
 WARNINGS = "warnings"
 POLLEN = "pollen"
 
+# Kalender-Bausteine: ein Untereintrag "calendar" je Art (kind).
+CALENDAR = "calendar"
+BIRTHDAYS = "birthdays"
+WASTE = "waste"
+PARCELS = "parcels"
+LEAGUE = "league"
+CALENDAR_KINDS = [BIRTHDAYS, WASTE, PARCELS, LEAGUE]
+CALENDAR_KIND_TITLES: dict[str, str] = {
+    BIRTHDAYS: "Geburtstage",
+    WASTE: "Müllkalender",
+    PARCELS: "Pakete",
+    LEAGUE: "Fußball-Liga",
+}
+
 SUBENTRY_GROUPS: dict[str, str] = {
+    CALENDAR: "calendar",
     WEATHER_REPORT: "weather",
     WEATHER_STATION: "weather",
     INDOOR: "weather",
@@ -33,6 +48,7 @@ SUBENTRY_TITLES: dict[str, str] = {
     INDOOR: "Innen",
     WARNINGS: "Warnmeldungen",
     POLLEN: "Pollen",
+    CALENDAR: "Kalender",
 }
 
 CONF_ANIMATION = "animation"

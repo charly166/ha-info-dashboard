@@ -74,3 +74,44 @@ export function useForecast(
 }
 
 export const useDailyForecast = (c: Connection | undefined, id: string | undefined) => useForecast(c, id, 'daily');
+
+export interface CalendarEvent {
+  entity_id: string;
+  summary: string;
+  /** Datum (ganztägig) oder ISO-Zeitpunkt */
+  start: string;
+  end: string;
+}
+
+const REFRESH_MS = 10 * 60 * 1000;
+
+/** Termine der Kalender ab heute für `days` Tage; wird regelmäßig neu geladen. */
+export function useCalendarEvents(
+  connection: Connection | undefined,
+  entities: string[] | undefined,
+  days: number,
+): CalendarEvent[] {
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const key = (entities ?? []).join(',');
+
+  useEffect(() => {
+    if (!connection || !key) {
+      setEvents([]);
+      return;
+    }
+    let cancelled = false;
+    const load = () =>
+      connection
+        .sendMessagePromise<CalendarEvent[]>({ type: `${DOMAIN}/calendar_events`, entities: key.split(','), days })
+        .then((e) => !cancelled && setEvents(e))
+        .catch(() => undefined);
+    load();
+    const timer = setInterval(load, REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [connection, key, days]);
+
+  return events;
+}

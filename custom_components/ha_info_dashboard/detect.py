@@ -8,7 +8,21 @@ from typing import Any
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 
-from .const import INDOOR, POLLEN, WARNINGS, WEATHER_REPORT, WEATHER_STATION
+from .const import (
+    BIRTHDAYS,
+    CALENDAR,
+    CALENDAR_KIND_TITLES,
+    CALENDAR_KINDS,
+    INDOOR,
+    LEAGUE,
+    PARCELS,
+    POLLEN,
+    SUBENTRY_TITLES,
+    WARNINGS,
+    WASTE,
+    WEATHER_REPORT,
+    WEATHER_STATION,
+)
 
 # Integrationen, die typischerweise Wetterstationen liefern.
 STATION_PLATFORMS = frozenset({"netatmo", "ecowitt"})
@@ -138,6 +152,55 @@ def detect_pollen(hass: HomeAssistant) -> dict[str, Any] | None:
     return {"entities": ids} if ids else None
 
 
+def _calendars(hass: HomeAssistant) -> list[tuple[str, str, str]]:
+    """(entity_id, Name in Kleinschreibung, Plattform) aller Kalender."""
+    registry = er.async_get(hass)
+    return [
+        (
+            s.entity_id,
+            f"{s.entity_id} {s.attributes.get('friendly_name', '')}".lower(),
+            entry.platform if (entry := registry.async_get(s.entity_id)) else "",
+        )
+        for s in hass.states.async_all("calendar")
+        if s.state != "unavailable"
+    ]
+
+
+def detect_birthdays(hass: HomeAssistant) -> dict[str, Any] | None:
+    ids = sorted(i for i, name, _ in _calendars(hass) if "geburtstag" in name or "birthday" in name)
+    return {"entities": ids} if ids else None
+
+
+def detect_waste(hass: HomeAssistant) -> dict[str, Any] | None:
+    calendars = _calendars(hass)
+    # Die Plattform ist eindeutig; Namen allein führen leicht zu Doppelungen.
+    ids = [i for i, _, p in calendars if p == "waste_collection_schedule"]
+    ids = ids or [i for i, name, _ in calendars if any(t in name for t in ("abfall", "müll", "muell", "waste"))]
+    return {"entities": sorted(ids)} if ids else None
+
+
+def detect_parcels(hass: HomeAssistant) -> dict[str, Any] | None:
+    """Sammelsensoren des Paket Trackers (HACS): alle offenen und heute zugestellte Pakete."""
+    ids = _by_platform(hass, "parcel_tracker")
+    found = {
+        "open": next((i for i in ids if i.endswith("_unterwegs")), None),
+        "delivered": next((i for i in ids if i.endswith("_zugestellt_heute")), None),
+    }
+    return {k: v for k, v in found.items() if v} if found["open"] else None
+
+
+def detect_league(hass: HomeAssistant) -> dict[str, Any] | None:
+    ids = [i for i in _by_platform(hass, "ligatracker") if i.endswith("_spieltage")]
+    return {"entities": ids} if ids else None
+
+
+CALENDAR_DETECTORS = {
+    BIRTHDAYS: detect_birthdays,
+    WASTE: detect_waste,
+    PARCELS: detect_parcels,
+    LEAGUE: detect_league,
+}
+
 DETECTORS = {
     WEATHER_REPORT: detect_weather_report,
     WEATHER_STATION: detect_weather_station,
@@ -152,6 +215,20 @@ def detect(hass: HomeAssistant, subentry_type: str) -> dict[str, Any]:
     return DETECTORS[subentry_type](hass) or {}
 
 
+def detect_kind(hass: HomeAssistant, kind: str) -> dict[str, Any]:
+    """Vorschlag für die Entitäten einer Kalender-Art."""
+    return CALENDAR_DETECTORS[kind](hass) or {}
+
+
 def detect_all(hass: HomeAssistant) -> dict[str, dict[str, Any]]:
-    """Alle erkannten Bausteine; nicht erkannte fehlen."""
-    return {t: found for t in DETECTORS if (found := detect(hass, t))}
+    """Alle erkannten Bausteine (Kalender-Arten unter ihrem Namen); nicht erkannte fehlen."""
+    found = {t: d for t in DETECTORS if (d := detect(hass, t))}
+    found.update({k: d for k in CALENDAR_KINDS if (d := detect_kind(hass, k))})
+    return found
+
+
+def to_subentry(key: str, data: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
+    """(Untereintragstyp, Daten, Titel) zu einem Erkennungsergebnis."""
+    if key in CALENDAR_KIND_TITLES:
+        return CALENDAR, {"kind": key, **data}, CALENDAR_KIND_TITLES[key]
+    return key, data, SUBENTRY_TITLES[key]

@@ -68,6 +68,21 @@ small { color: var(--hid-muted); font-weight: 400; }
   .weather-group { grid-column: span 2; }
 }
 
+.info-card { padding: 14px 16px; align-self: start; }
+.info-card h3 { font-size: 0.75rem; color: var(--hid-muted); margin: 12px 0 4px; font-weight: 500; }
+.card-note { font-size: 0.7rem; margin: 10px 0 0; }
+.matchday { margin: -6px 0 0; font-size: 0.85rem; }
+.rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rows li { display: flex; align-items: center; gap: 10px; }
+.rows li.done { opacity: 0.75; }
+.row-icon { font-size: 1.3rem; width: 1.6rem; text-align: center; flex: none; }
+.row-main { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.row-side { flex: none; font-size: 0.85rem; color: var(--hid-muted); text-align: right; }
+.matches .kickoff { width: 3.2rem; text-align: left; font-variant-numeric: tabular-nums; }
+.versus { display: flex; flex-direction: column; gap: 2px; }
+.team { display: flex; align-items: center; gap: 8px; }
+.team img { width: 20px; height: 20px; object-fit: contain; }
+
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }
 .metric { display: flex; flex-direction: column; }
 .metric-label { font-size: 0.75rem; color: var(--hid-muted); }
