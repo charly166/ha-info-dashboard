@@ -5,13 +5,14 @@ from __future__ import annotations
 import logging
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import voluptuous as vol
 
 from homeassistant.components import frontend, panel_custom, websocket_api
 from homeassistant.components.http import StaticPathConfig
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.typing import ConfigType
@@ -29,8 +30,9 @@ from .const import (
     PANEL_TITLE,
     PANEL_URL_PATH,
     SIGNAL_CONFIG_UPDATED,
-    SUBENTRY_GROUPS,
+    SUBENTRY_TITLES,
     URL_BASE,
+    WEATHER,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,8 +47,8 @@ def build_config(hass: HomeAssistant) -> dict[str, Any]:
     blocks = [
         {
             "id": subentry.subentry_id,
-            "type": subentry.subentry_type,
-            "group": SUBENTRY_GROUPS.get(subentry.subentry_type, "other"),
+            "type": subentry.data.get("kind", subentry.subentry_type),
+            "group": subentry.subentry_type,
             "title": subentry.title,
             "data": dict(subentry.data),
         }
@@ -88,7 +90,7 @@ async def ws_calendar_events(hass: HomeAssistant, connection: websocket_api.Acti
     allowed = {
         entity_id
         for block in build_config(hass)["blocks"]
-        if block["type"] == CALENDAR
+        if block["group"] == CALENDAR
         for entity_id in block["data"].get("entities", [])
     }
     start = dt_util.start_of_local_day()
@@ -127,6 +129,26 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await hass.http.async_register_static_paths(
         [StaticPathConfig(URL_BASE, str(STATIC_DIR), cache_headers=False)]
     )
+    return True
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Version 1 hatte je Wetter-Baustein einen eigenen Untereintrags-Typ; jetzt gibt es die Gruppe "weather"."""
+    if entry.version == 1:
+        for subentry in list(entry.subentries.values()):
+            if subentry.subentry_type not in SUBENTRY_TITLES:
+                continue
+            hass.config_entries.async_remove_subentry(entry, subentry.subentry_id)
+            hass.config_entries.async_add_subentry(
+                entry,
+                ConfigSubentry(
+                    data=MappingProxyType({"kind": subentry.subentry_type, **subentry.data}),
+                    subentry_type=WEATHER,
+                    title=subentry.title,
+                    unique_id=subentry.subentry_type,
+                ),
+            )
+        hass.config_entries.async_update_entry(entry, version=2)
     return True
 
 

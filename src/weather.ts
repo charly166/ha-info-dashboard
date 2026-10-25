@@ -32,6 +32,21 @@ function weatherAttr(w: HassEntity | undefined, key: string, unit: string): Read
 const SECTORS = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 const SECTOR_LABEL: Record<string, string> = { n: 'N', ne: 'NO', e: 'O', se: 'SO', s: 'S', sw: 'SW', w: 'W', nw: 'NW' };
 
+export interface SunTimes {
+  rising?: Date;
+  setting?: Date;
+}
+
+/** Nächster Sonnenaufgang und -untergang (sun.sun). */
+export function resolveSun(all: HassEntities): SunTimes {
+  const a = all['sun.sun']?.attributes;
+  const date = (v: unknown) => {
+    const d = typeof v === 'string' ? new Date(v) : undefined;
+    return d && !Number.isNaN(d.getTime()) ? d : undefined;
+  };
+  return { rising: date(a?.next_rising), setting: date(a?.next_setting) };
+}
+
 export type TimeOfDay = 'day' | 'twilight' | 'night';
 
 /** Tageszeit aus der Sonnenhöhe (sun.sun), ersatzweise aus der Uhrzeit. */

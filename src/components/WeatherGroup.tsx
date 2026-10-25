@@ -7,6 +7,7 @@ import {
   timeOfDay,
   resolveIndoor,
   resolveOutdoor,
+  resolveSun,
   resolvePollen,
   resolveWarnings,
   type Pollen,
@@ -59,6 +60,35 @@ function Detail({
         {fallback && <sup title="Wert aus dem Wetterbericht, Messstation nicht verfügbar"> DWD</sup>}
         {extra}
       </span>
+    </div>
+  );
+}
+
+const clock = (d: Date) => d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+function SunIcon({ down }: { down?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 19h18M7 19a5 5 0 0 1 10 0M5.6 13.6l1.2 1.2M18.4 13.6l-1.2 1.2M2.5 19H4M20 19h1.5" />
+      <path d={down ? 'M12 4v6m-2.5-2.5L12 10l2.5-2.5' : 'M12 10V4m-2.5 2.5L12 4l2.5 2.5'} />
+    </svg>
+  );
+}
+
+function SunTimesRow({ rising, setting }: { rising?: Date; setting?: Date }) {
+  if (!rising && !setting) return null;
+  return (
+    <div class="sun-times">
+      {rising && (
+        <span title="Sonnenaufgang">
+          <SunIcon /> {clock(rising)}
+        </span>
+      )}
+      {setting && (
+        <span title="Sonnenuntergang">
+          <SunIcon down /> {clock(setting)}
+        </span>
+      )}
     </div>
   );
 }
@@ -198,6 +228,8 @@ export function WeatherGroup({
               {station?.rain_today && <Detail label="Regen heute" value={fmt(o.rainToday, 1)} />}
               {raining && <Detail label="Regen aktuell" value={fmt(o.rain, 1)} />}
             </div>
+
+            <SunTimesRow {...resolveSun(entities)} />
           </>
         )}
 

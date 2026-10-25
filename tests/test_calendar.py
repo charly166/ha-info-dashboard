@@ -83,7 +83,7 @@ async def test_add_calendar_block_choose_kind_then_entity(hass):
     result = await flow.async_init((entry.entry_id, "calendar"), context={"source": config_entries.SOURCE_USER})
     assert result["step_id"] == "user"
     result = await flow.async_configure(result["flow_id"], {"kind": "birthdays"})
-    assert result["step_id"] == "entities"
+    assert result["step_id"] == "birthdays"
     assert "Geburtstage" in result["description_placeholders"]["kind"]
     result = await flow.async_configure(result["flow_id"], {"entities": []})
     assert result["errors"] == {"base": "no_entity"}
@@ -101,7 +101,7 @@ async def test_add_calendar_block_choose_kind_then_entity(hass):
         (entry.entry_id, "calendar"),
         context={"source": config_entries.SOURCE_RECONFIGURE, "subentry_id": block.subentry_id},
     )
-    assert result["step_id"] == "reconfigure"
+    assert result["step_id"] == "birthdays"
     result = await flow.async_configure(result["flow_id"], {"entities": ["calendar.familie"]})
     assert result["reason"] == "reconfigure_successful"
     assert block.data == {"kind": "birthdays", "entities": ["calendar.familie"]}

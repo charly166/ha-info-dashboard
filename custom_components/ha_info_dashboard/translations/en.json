@@ -22,48 +22,30 @@
     }
   },
   "config_subentries": {
-    "weather_report": {
+    "weather": {
       "initiate_flow": {
-        "user": "Weather: add weather report",
-        "reconfigure": "Edit weather report"
+        "user": "Add weather block",
+        "reconfigure": "Edit weather block"
       },
-      "entry_type": "Weather report",
+      "entry_type": "Weather",
       "step": {
         "user": {
-          "title": "Weather report",
-          "description": "Weather entity for current conditions and forecast (e.g. DWD).",
+          "title": "Weather",
+          "description": "Which weather block do you want to set up?",
           "data": {
-            "weather": "Weather entity"
-          },
-          "data_description": {}
+            "kind": "Type"
+          }
         },
-        "reconfigure": {
-          "title": "Weather report",
-          "description": "Weather entity for current conditions and forecast (e.g. DWD).",
+        "weather_report": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "weather": "Weather entity"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Please select at least one entity."
-      },
-      "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
-        "reconfigure_successful": "Block saved."
-      }
-    },
-    "weather_station": {
-      "initiate_flow": {
-        "user": "Weather: add weather station",
-        "reconfigure": "Edit weather station"
-      },
-      "entry_type": "Weather station",
-      "step": {
-        "user": {
-          "title": "Weather station",
-          "description": "Readings from your own weather station (e.g. Netatmo or Ecowitt). Missing values fall back to the weather report.",
+          }
+        },
+        "weather_station": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "temperature": "Temperature (outdoor)",
             "humidity": "Humidity (outdoor)",
@@ -71,172 +53,89 @@
             "rain_today": "Precipitation (today)",
             "wind_speed": "Wind speed",
             "wind_direction": "Wind direction"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Weather station",
-          "description": "Readings from your own weather station (e.g. Netatmo or Ecowitt). Missing values fall back to the weather report.",
-          "data": {
-            "temperature": "Temperature (outdoor)",
-            "humidity": "Humidity (outdoor)",
-            "rain": "Precipitation (current)",
-            "rain_today": "Precipitation (today)",
-            "wind_speed": "Wind speed",
-            "wind_direction": "Wind direction"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Please select at least one entity."
-      },
-      "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
-        "reconfigure_successful": "Block saved."
-      }
-    },
-    "indoor": {
-      "initiate_flow": {
-        "user": "Weather: add indoor",
-        "reconfigure": "Edit indoor"
-      },
-      "entry_type": "Indoor",
-      "step": {
-        "user": {
-          "title": "Indoor",
-          "description": "Indoor climate from your weather station's main module.",
+        "indoor": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "temperature": "Temperature",
             "humidity": "Humidity",
             "co2": "Carbon dioxide"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Indoor",
-          "description": "Indoor climate from your weather station's main module.",
-          "data": {
-            "temperature": "Temperature",
-            "humidity": "Humidity",
-            "co2": "Carbon dioxide"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Please select at least one entity."
-      },
-      "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
-        "reconfigure_successful": "Block saved."
-      }
-    },
-    "warnings": {
-      "initiate_flow": {
-        "user": "Weather: add warnings",
-        "reconfigure": "Edit warnings"
-      },
-      "entry_type": "Warnings",
-      "step": {
-        "user": {
-          "title": "Warnings",
-          "description": "DWD weather warning sensors (current warning level).",
+        "warnings": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "entities": "Warning sensors"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Warnings",
-          "description": "DWD weather warning sensors (current warning level).",
+        "pollen": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
-            "entities": "Warning sensors"
-          },
-          "data_description": {}
+            "entities": "Pollen sensors"
+          }
         }
       },
       "error": {
         "no_entity": "Please select at least one entity."
       },
       "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
-        "reconfigure_successful": "Block saved."
-      }
-    },
-    "pollen": {
-      "initiate_flow": {
-        "user": "Weather: add pollen",
-        "reconfigure": "Edit pollen"
-      },
-      "entry_type": "Pollen",
-      "step": {
-        "user": {
-          "title": "Pollen",
-          "description": "DWD pollen forecast index sensors.",
-          "data": {
-            "entities": "Pollen sensors"
-          },
-          "data_description": {}
-        },
-        "reconfigure": {
-          "title": "Pollen",
-          "description": "DWD pollen forecast index sensors.",
-          "data": {
-            "entities": "Pollen sensors"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Please select at least one entity."
-      },
-      "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "already_configured": "All blocks of this group are already set up. Use “Reconfigure” to change them.",
         "reconfigure_successful": "Block saved."
       }
     },
     "calendar": {
       "initiate_flow": {
-        "user": "Calendar: add block",
-        "reconfigure": "Edit calendar block"
+        "user": "Add calendar info",
+        "reconfigure": "Edit calendar info"
       },
-      "entry_type": "Calendar",
+      "entry_type": "Calendar info",
       "step": {
         "user": {
-          "title": "Kind of calendar",
-          "description": "Which block do you want to set up?",
+          "title": "Calendar info",
+          "description": "Which calendar info do you want to set up?",
           "data": {
-            "kind": "Kind"
-          },
-          "data_description": {}
+            "kind": "Type"
+          }
         },
-        "entities": {
+        "birthdays": {
           "title": "{kind}",
           "description": "{hint}",
           "data": {
-            "entities": "Calendars",
-            "open": "Open parcels (sensor “Pakete unterwegs”)",
-            "delivered": "Delivered today (sensor “Pakete zugestellt heute”)"
-          },
-          "data_description": {}
+            "entities": "Calendars"
+          }
         },
-        "reconfigure": {
+        "waste": {
           "title": "{kind}",
           "description": "{hint}",
           "data": {
-            "entities": "Calendars",
+            "entities": "Calendars"
+          }
+        },
+        "parcels": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
             "open": "Open parcels (sensor “Pakete unterwegs”)",
             "delivered": "Delivered today (sensor “Pakete zugestellt heute”)"
-          },
-          "data_description": {}
+          }
+        },
+        "league": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Leagues (“Spieltage” sensor per league)"
+          }
         }
       },
       "error": {
         "no_entity": "Please select at least one entity."
       },
       "abort": {
-        "already_configured": "This block is already set up. Use “Reconfigure” to change it.",
+        "already_configured": "All blocks of this group are already set up. Use “Reconfigure” to change them.",
         "reconfigure_successful": "Block saved."
       }
     }
@@ -263,9 +162,18 @@
     "calendar_kind": {
       "options": {
         "birthdays": "Birthdays",
-        "waste": "Waste calendar",
+        "waste": "Waste collection",
         "parcels": "Parcels (Paket Tracker)",
         "league": "Football league (HA Liga Tracker)"
+      }
+    },
+    "weather_kind": {
+      "options": {
+        "weather_report": "Weather report",
+        "weather_station": "Weather station",
+        "indoor": "Indoor",
+        "warnings": "Warnings",
+        "pollen": "Pollen"
       }
     }
   }

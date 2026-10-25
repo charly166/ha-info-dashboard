@@ -1,17 +1,31 @@
 import type { Connection, HassEntities } from 'home-assistant-js-websocket';
 import { useCalendarEvents } from '../ha';
 import type { Block } from '../types';
+import { ThemeArt, type Theme } from './ThemeArt';
 import { carrierLabel, dayLabel, etaLabel, occurrences, parcelsOf, wasteIcon } from '../calendar';
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-/** Karte mit Überschrift; ohne Inhalt wird sie gar nicht erst gezeichnet. */
-function Card({ title, note, children }: { title: string; note?: string; children: preact.ComponentChildren }) {
+/** Karte mit Überschrift und themenbezogenem Hintergrund. */
+function Card({
+  theme,
+  title,
+  note,
+  children,
+}: {
+  theme: Theme;
+  title: string;
+  note?: string;
+  children: preact.ComponentChildren;
+}) {
   return (
-    <section class="card info-card">
-      <h2>{title}</h2>
-      {children}
-      {note && <p class="card-note muted">{note}</p>}
+    <section class={`card info-card themed theme-${theme}`}>
+      <ThemeArt theme={theme} />
+      <div class="card-body">
+        <h2>{title}</h2>
+        {children}
+        {note && <p class="card-note">{note}</p>}
+      </div>
     </section>
   );
 }
@@ -20,7 +34,7 @@ function Birthdays({ entities, connection }: { entities: string[]; connection?: 
   const items = occurrences(useCalendarEvents(connection, entities, 3));
   if (items.length === 0) return null;
   return (
-    <Card title="Geburtstage">
+    <Card theme="birthdays" title="Geburtstage">
       <ul class="rows">
         {items.map((o) => (
           <li key={`${o.date.getTime()}${o.summary}`}>
@@ -38,7 +52,7 @@ function Waste({ entities, connection }: { entities: string[]; connection?: Conn
   const items = occurrences(useCalendarEvents(connection, entities, 7));
   if (items.length === 0) return null;
   return (
-    <Card title="Müllabfuhr">
+    <Card theme="waste" title="Müllabfuhr">
       <ul class="rows">
         {items.map((o) => (
           <li key={`${o.date.getTime()}${o.summary}`}>
@@ -60,7 +74,7 @@ function Parcels({ data, entities }: { data: Record<string, unknown>; entities: 
   const pending = open.filter((p) => !deliveredNumbers.has(p.number));
   if (pending.length === 0 && delivered.length === 0) return null;
   return (
-    <Card title="Pakete" note="Daten: Paket Tracker (HACS)">
+    <Card theme="parcels" title="Pakete" note="Daten: Paket Tracker (HACS)">
       <ul class="rows">
         {pending.map((p) => (
           <li key={p.number}>
@@ -126,7 +140,7 @@ function League({ id, entities }: { id: string; entities: HassEntities }) {
   }
 
   return (
-    <Card title={data?.competition?.name ?? 'Liga'} note="Daten: HA Liga Tracker">
+    <Card theme="league" title={data?.competition?.name ?? 'Liga'} note="Daten: HA Liga Tracker">
       <p class="muted matchday">{day.name}</p>
       {[...byDay].map(([label, matches]) => (
         <div key={label}>

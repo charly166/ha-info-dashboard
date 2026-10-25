@@ -22,48 +22,30 @@
     }
   },
   "config_subentries": {
-    "weather_report": {
+    "weather": {
       "initiate_flow": {
-        "user": "Wetter: Wetterbericht hinzufügen",
-        "reconfigure": "Wetterbericht ändern"
+        "user": "Wetter-Baustein hinzufügen",
+        "reconfigure": "Wetter-Baustein ändern"
       },
-      "entry_type": "Wetterbericht",
+      "entry_type": "Wetter",
       "step": {
         "user": {
-          "title": "Wetterbericht",
-          "description": "Wetter-Entität für aktuelle Lage und Prognose (z. B. DWD).",
+          "title": "Wetter",
+          "description": "Welcher Wetter-Baustein soll eingerichtet werden?",
           "data": {
-            "weather": "Wetter-Entität"
-          },
-          "data_description": {}
+            "kind": "Art"
+          }
         },
-        "reconfigure": {
-          "title": "Wetterbericht",
-          "description": "Wetter-Entität für aktuelle Lage und Prognose (z. B. DWD).",
+        "weather_report": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "weather": "Wetter-Entität"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Bitte mindestens eine Entität auswählen."
-      },
-      "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
-        "reconfigure_successful": "Baustein gespeichert."
-      }
-    },
-    "weather_station": {
-      "initiate_flow": {
-        "user": "Wetter: Wetterstation hinzufügen",
-        "reconfigure": "Wetterstation ändern"
-      },
-      "entry_type": "Wetterstation",
-      "step": {
-        "user": {
-          "title": "Wetterstation",
-          "description": "Messwerte deiner eigenen Wetterstation (z. B. Netatmo oder Ecowitt). Fehlende Werte werden aus dem Wetterbericht ergänzt.",
+          }
+        },
+        "weather_station": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "temperature": "Temperatur (außen)",
             "humidity": "Luftfeuchtigkeit (außen)",
@@ -71,172 +53,89 @@
             "rain_today": "Niederschlag (heute)",
             "wind_speed": "Windgeschwindigkeit",
             "wind_direction": "Windrichtung"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Wetterstation",
-          "description": "Messwerte deiner eigenen Wetterstation (z. B. Netatmo oder Ecowitt). Fehlende Werte werden aus dem Wetterbericht ergänzt.",
-          "data": {
-            "temperature": "Temperatur (außen)",
-            "humidity": "Luftfeuchtigkeit (außen)",
-            "rain": "Niederschlag (aktuell)",
-            "rain_today": "Niederschlag (heute)",
-            "wind_speed": "Windgeschwindigkeit",
-            "wind_direction": "Windrichtung"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Bitte mindestens eine Entität auswählen."
-      },
-      "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
-        "reconfigure_successful": "Baustein gespeichert."
-      }
-    },
-    "indoor": {
-      "initiate_flow": {
-        "user": "Wetter: Innenraum hinzufügen",
-        "reconfigure": "Innenraum ändern"
-      },
-      "entry_type": "Innen",
-      "step": {
-        "user": {
-          "title": "Innen",
-          "description": "Raumklima aus deinem Wetterstations-Hauptmodul.",
+        "indoor": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "temperature": "Temperatur",
             "humidity": "Luftfeuchtigkeit",
             "co2": "Kohlendioxid"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Innen",
-          "description": "Raumklima aus deinem Wetterstations-Hauptmodul.",
-          "data": {
-            "temperature": "Temperatur",
-            "humidity": "Luftfeuchtigkeit",
-            "co2": "Kohlendioxid"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Bitte mindestens eine Entität auswählen."
-      },
-      "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
-        "reconfigure_successful": "Baustein gespeichert."
-      }
-    },
-    "warnings": {
-      "initiate_flow": {
-        "user": "Wetter: Warnmeldungen hinzufügen",
-        "reconfigure": "Warnmeldungen ändern"
-      },
-      "entry_type": "Warnmeldungen",
-      "step": {
-        "user": {
-          "title": "Warnmeldungen",
-          "description": "Sensoren der DWD-Warnmeldungen (aktuelle Warnstufe).",
+        "warnings": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
             "entities": "Warnsensoren"
-          },
-          "data_description": {}
+          }
         },
-        "reconfigure": {
-          "title": "Warnmeldungen",
-          "description": "Sensoren der DWD-Warnmeldungen (aktuelle Warnstufe).",
+        "pollen": {
+          "title": "{kind}",
+          "description": "{hint}",
           "data": {
-            "entities": "Warnsensoren"
-          },
-          "data_description": {}
+            "entities": "Pollensensoren"
+          }
         }
       },
       "error": {
         "no_entity": "Bitte mindestens eine Entität auswählen."
       },
       "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
-        "reconfigure_successful": "Baustein gespeichert."
-      }
-    },
-    "pollen": {
-      "initiate_flow": {
-        "user": "Wetter: Pollenflug hinzufügen",
-        "reconfigure": "Pollenflug ändern"
-      },
-      "entry_type": "Pollen",
-      "step": {
-        "user": {
-          "title": "Pollen",
-          "description": "Sensoren des DWD-Pollenflug-Gefahrenindex.",
-          "data": {
-            "entities": "Pollensensoren"
-          },
-          "data_description": {}
-        },
-        "reconfigure": {
-          "title": "Pollen",
-          "description": "Sensoren des DWD-Pollenflug-Gefahrenindex.",
-          "data": {
-            "entities": "Pollensensoren"
-          },
-          "data_description": {}
-        }
-      },
-      "error": {
-        "no_entity": "Bitte mindestens eine Entität auswählen."
-      },
-      "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "already_configured": "Alle Bausteine dieser Gruppe sind bereits eingerichtet. Du kannst sie über „Neu konfigurieren“ ändern.",
         "reconfigure_successful": "Baustein gespeichert."
       }
     },
     "calendar": {
       "initiate_flow": {
-        "user": "Kalender: Baustein hinzufügen",
-        "reconfigure": "Kalender-Baustein ändern"
+        "user": "Kalender-Info hinzufügen",
+        "reconfigure": "Kalender-Info ändern"
       },
-      "entry_type": "Kalender",
+      "entry_type": "Kalender-Infos",
       "step": {
         "user": {
-          "title": "Art des Kalenders",
-          "description": "Welcher Baustein soll eingerichtet werden?",
+          "title": "Kalender-Infos",
+          "description": "Welche Kalender-Info soll eingerichtet werden?",
           "data": {
             "kind": "Art"
-          },
-          "data_description": {}
+          }
         },
-        "entities": {
+        "birthdays": {
           "title": "{kind}",
           "description": "{hint}",
           "data": {
-            "entities": "Kalender",
-            "open": "Offene Pakete (Sensor „Pakete unterwegs“)",
-            "delivered": "Heute zugestellt (Sensor „Pakete zugestellt heute“)"
-          },
-          "data_description": {}
+            "entities": "Kalender"
+          }
         },
-        "reconfigure": {
+        "waste": {
           "title": "{kind}",
           "description": "{hint}",
           "data": {
-            "entities": "Kalender",
+            "entities": "Kalender"
+          }
+        },
+        "parcels": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
             "open": "Offene Pakete (Sensor „Pakete unterwegs“)",
             "delivered": "Heute zugestellt (Sensor „Pakete zugestellt heute“)"
-          },
-          "data_description": {}
+          }
+        },
+        "league": {
+          "title": "{kind}",
+          "description": "{hint}",
+          "data": {
+            "entities": "Ligen (Sensor „Spieltage“ je Liga)"
+          }
         }
       },
       "error": {
         "no_entity": "Bitte mindestens eine Entität auswählen."
       },
       "abort": {
-        "already_configured": "Dieser Baustein ist bereits eingerichtet. Du kannst ihn über „Neu konfigurieren“ ändern.",
+        "already_configured": "Alle Bausteine dieser Gruppe sind bereits eingerichtet. Du kannst sie über „Neu konfigurieren“ ändern.",
         "reconfigure_successful": "Baustein gespeichert."
       }
     }
@@ -266,6 +165,15 @@
         "waste": "Müllkalender",
         "parcels": "Pakete (Paket Tracker)",
         "league": "Fußball-Liga (HA Liga Tracker)"
+      }
+    },
+    "weather_kind": {
+      "options": {
+        "weather_report": "Wetterbericht",
+        "weather_station": "Wetterstation",
+        "indoor": "Innen",
+        "warnings": "Warnmeldungen",
+        "pollen": "Pollen"
       }
     }
   }

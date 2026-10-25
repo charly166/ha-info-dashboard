@@ -68,7 +68,32 @@ small { color: var(--hid-muted); font-weight: 400; }
   .weather-group { grid-column: span 2; }
 }
 
-.info-card { padding: 14px 16px; align-self: start; }
+.info-card { align-self: start; }
+.card-body { padding: 14px 16px; }
+
+/* Themenbezogene Hintergründe: Farbfläche + SVG-Motiv, Text immer hell auf getönter Fläche */
+.themed { position: relative; isolation: isolate; color: #fff; border: 0; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+.themed .card-body { position: relative; z-index: 1; }
+.themed .art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.themed .art-top { height: auto; bottom: auto; }
+.themed .art-bottom { top: auto; height: 80px; width: 80px; }
+.themed h2, .themed h3, .themed .row-side, .themed .card-note, .themed .matchday, .themed small, .themed .muted {
+  color: rgba(255, 255, 255, 0.85);
+}
+.themed .rows { background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 12px; padding: 10px 12px; }
+
+.themed { container-type: inline-size; }
+/* Die Motive oben skalieren mit der Kartenbreite; cqw hält den Text darunter im Gleichschritt */
+.theme-birthdays { background: linear-gradient(160deg, #5b3fd6, #d9468f); }
+.theme-birthdays .card-body { padding-top: calc(24cqw + 4px); }
+.theme-waste { background: linear-gradient(180deg, #3f8f5e, #2c7a4f); }
+.theme-waste .card-body, .theme-parcels .card-body { padding-top: calc(26.25cqw + 10px); }
+.theme-waste h2, .theme-parcels h2 { position: absolute; top: 14px; left: 16px; margin: 0; }
+.theme-parcels { background: linear-gradient(180deg, #8d6a45, #b98a58); }
+.theme-league {
+  background: repeating-linear-gradient(90deg, #1f7f3f 0 40px, #25914a 40px 80px);
+}
+.theme-league .card-body { padding-left: 28px; }
 .info-card h3 { font-size: 0.75rem; color: var(--hid-muted); margin: 12px 0 4px; font-weight: 500; }
 .card-note { font-size: 0.7rem; margin: 10px 0 0; }
 .matchday { margin: -6px 0 0; font-size: 0.85rem; }
@@ -158,6 +183,9 @@ small { color: var(--hid-muted); font-weight: 400; }
 .detail-value sup { font-size: 0.6rem; opacity: 0.8; }
 .wind-dir { margin-left: 6px; font-size: 0.85rem; font-weight: 400; }
 .wind-arrow { position: static !important; display: inline-block !important; font-style: normal; margin-right: 2px; }
+
+.sun-times { display: flex; gap: 20px; align-items: center; font-size: 1rem; }
+.sun-times span { display: inline-flex; align-items: center; gap: 6px; }
 
 .forecast { list-style: none; display: flex; justify-content: space-between; gap: 4px; margin: 0; padding: 10px 8px; }
 .forecast li { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }

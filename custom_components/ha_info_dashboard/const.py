@@ -33,13 +33,11 @@ CALENDAR_KIND_TITLES: dict[str, str] = {
     LEAGUE: "Fußball-Liga",
 }
 
-SUBENTRY_GROUPS: dict[str, str] = {
-    CALENDAR: "calendar",
-    WEATHER_REPORT: "weather",
-    WEATHER_STATION: "weather",
-    INDOOR: "weather",
-    WARNINGS: "weather",
-    POLLEN: "weather",
+# Untereinträge sind nach Gruppen geordnet (Typ = Gruppe, Art = Baustein in "kind").
+WEATHER = "weather"
+GROUP_KINDS: dict[str, list[str]] = {
+    WEATHER: [WEATHER_REPORT, WEATHER_STATION, INDOOR, WARNINGS, POLLEN],
+    CALENDAR: CALENDAR_KINDS,
 }
 
 SUBENTRY_TITLES: dict[str, str] = {
@@ -48,8 +46,10 @@ SUBENTRY_TITLES: dict[str, str] = {
     INDOOR: "Innen",
     WARNINGS: "Warnmeldungen",
     POLLEN: "Pollen",
-    CALENDAR: "Kalender",
 }
+
+KIND_TITLES: dict[str, str] = {**SUBENTRY_TITLES, **CALENDAR_KIND_TITLES}
+GROUP_TITLES: dict[str, str] = {WEATHER: "Wetter", CALENDAR: "Kalender-Infos"}
 
 CONF_ANIMATION = "animation"
 ANIMATION_ON = "on"

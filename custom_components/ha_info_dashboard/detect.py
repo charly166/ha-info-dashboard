@@ -10,14 +10,13 @@ from homeassistant.helpers import entity_registry as er
 
 from .const import (
     BIRTHDAYS,
-    CALENDAR,
-    CALENDAR_KIND_TITLES,
     CALENDAR_KINDS,
+    GROUP_KINDS,
     INDOOR,
+    KIND_TITLES,
     LEAGUE,
     PARCELS,
     POLLEN,
-    SUBENTRY_TITLES,
     WARNINGS,
     WASTE,
     WEATHER_REPORT,
@@ -210,14 +209,12 @@ DETECTORS = {
 }
 
 
-def detect(hass: HomeAssistant, subentry_type: str) -> dict[str, Any]:
+def detect(hass: HomeAssistant, kind: str) -> dict[str, Any]:
     """Vorschlag für einen Baustein (leer, wenn nichts erkannt wurde)."""
-    return DETECTORS[subentry_type](hass) or {}
+    return (DETECTORS | CALENDAR_DETECTORS)[kind](hass) or {}
 
 
-def detect_kind(hass: HomeAssistant, kind: str) -> dict[str, Any]:
-    """Vorschlag für die Entitäten einer Kalender-Art."""
-    return CALENDAR_DETECTORS[kind](hass) or {}
+detect_kind = detect
 
 
 def detect_all(hass: HomeAssistant) -> dict[str, dict[str, Any]]:
@@ -227,8 +224,7 @@ def detect_all(hass: HomeAssistant) -> dict[str, dict[str, Any]]:
     return found
 
 
-def to_subentry(key: str, data: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
-    """(Untereintragstyp, Daten, Titel) zu einem Erkennungsergebnis."""
-    if key in CALENDAR_KIND_TITLES:
-        return CALENDAR, {"kind": key, **data}, CALENDAR_KIND_TITLES[key]
-    return key, data, SUBENTRY_TITLES[key]
+def to_subentry(kind: str, data: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
+    """(Gruppe, Daten, Titel) zu einem Erkennungsergebnis."""
+    group = next(g for g, kinds in GROUP_KINDS.items() if kind in kinds)
+    return group, {"kind": kind, **data}, KIND_TITLES[kind]
