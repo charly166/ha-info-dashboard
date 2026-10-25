@@ -40,13 +40,13 @@
 
 /* 1 Spalte (iPhone), 3 (Wand-Tablet), maximal 4 (Browser) – ergibt sich aus Breite und Max-Breite */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: 16px;
+  columns: 4 320px;
+  column-gap: 16px;
   padding: 16px;
   max-width: 1600px;
   margin: 0 auto;
 }
+.grid > * { break-inside: avoid; margin-bottom: 16px; }
 
 .card {
   background: var(--hid-card);
@@ -64,31 +64,23 @@ a { color: var(--hid-accent); }
 small { color: var(--hid-muted); font-weight: 400; }
 
 .weather-group { display: flex; flex-direction: column; }
-@media (min-width: 720px) {
-  .weather-group { grid-column: span 2; }
-}
 
-.info-card { align-self: start; }
 .card-body { padding: 14px 16px; }
 
 /* Themenbezogene Hintergründe: Farbfläche + SVG-Motiv, Text immer hell auf getönter Fläche */
 .themed { position: relative; isolation: isolate; color: #fff; border: 0; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
 .themed .card-body { position: relative; z-index: 1; }
-.themed .art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+.themed .art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.45; }
 .themed .art-top { height: auto; bottom: auto; }
+.themed .art-bottom-wide { height: auto; top: auto; bottom: 0; }
 .themed .art-bottom { top: auto; height: 80px; width: 80px; }
 .themed h2, .themed h3, .themed .row-side, .themed .card-note, .themed .matchday, .themed small, .themed .muted {
   color: rgba(255, 255, 255, 0.85);
 }
 .themed .rows { background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 12px; padding: 10px 12px; }
 
-.themed { container-type: inline-size; }
-/* Die Motive oben skalieren mit der Kartenbreite; cqw hält den Text darunter im Gleichschritt */
 .theme-birthdays { background: linear-gradient(160deg, #5b3fd6, #d9468f); }
-.theme-birthdays .card-body { padding-top: calc(24cqw + 4px); }
-.theme-waste { background: linear-gradient(180deg, #3f8f5e, #2c7a4f); }
-.theme-waste .card-body, .theme-parcels .card-body { padding-top: calc(26.25cqw + 10px); }
-.theme-waste h2, .theme-parcels h2 { position: absolute; top: 14px; left: 16px; margin: 0; }
+.theme-waste { background: linear-gradient(180deg, #4f94c8, #3f8f5e 55%, #2c7a4f); }
 .theme-parcels { background: linear-gradient(180deg, #8d6a45, #b98a58); }
 .theme-league {
   background: repeating-linear-gradient(90deg, #1f7f3f 0 40px, #25914a 40px 80px);
@@ -103,9 +95,12 @@ small { color: var(--hid-muted); font-weight: 400; }
 .row-icon { font-size: 1.3rem; width: 1.6rem; text-align: center; flex: none; }
 .row-main { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .row-side { flex: none; font-size: 0.85rem; color: var(--hid-muted); text-align: right; }
-.matches .kickoff { width: 3.2rem; text-align: left; font-variant-numeric: tabular-nums; }
-.versus { display: flex; flex-direction: column; gap: 2px; }
-.team { display: flex; align-items: center; gap: 8px; }
+.matches .kickoff { width: 3.2rem; text-align: left; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.matches li { flex-wrap: nowrap; }
+.versus { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.vs { flex: none; opacity: 0.7; }
+.team { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 0 1 auto; }
+.team span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .team img { width: 20px; height: 20px; object-fit: contain; }
 
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; }

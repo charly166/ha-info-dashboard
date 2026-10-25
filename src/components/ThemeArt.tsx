@@ -85,9 +85,8 @@ function Birthdays() {
 
 function Waste() {
   return (
-    <svg class="art art-top" viewBox="0 0 320 84" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
-      {/* Himmel, Straße */}
-      <rect x="0" y="0" width="320" height="64" fill="#7fbde3" />
+    <svg class="art art-bottom-wide" viewBox="0 0 320 84" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
+      {/* Straße */}
       <rect x="0" y="64" width="320" height="20" fill="#3b4048" />
       {range(8).map((i) => (
         <rect key={i} x={10 + i * 42} y="73" width="22" height="3" rx="1.5" fill="#f5d76e" />
@@ -125,7 +124,7 @@ function Box({ x, y, w, h, rotate = 0 }: { x: number; y: number; w: number; h: n
 
 function Parcels() {
   return (
-    <svg class="art art-top" viewBox="0 0 320 84" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
+    <svg class="art art-bottom-wide" viewBox="0 0 320 84" preserveAspectRatio="xMaxYMax meet" aria-hidden="true">
       <rect x="150" y="76" width="170" height="6" rx="3" fill="rgba(0,0,0,0.25)" />
       <Box x={170} y={30} w={70} h={46} />
       <Box x={246} y={44} w={58} h={32} />

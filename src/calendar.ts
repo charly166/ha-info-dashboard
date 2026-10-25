@@ -51,16 +51,17 @@ export function occurrences(events: CalendarEvent[]): Occurrence[] {
   return out.sort((a, b) => a.date.getTime() - b.date.getTime() || a.summary.localeCompare(b.summary, 'de'));
 }
 
-const WASTE_ICONS: [RegExp, string][] = [
-  [/bio/i, '🟤'],
-  [/papier|blau/i, '🔵'],
-  [/gelb|wertstoff|verpackung/i, '🟡'],
-  [/rest|schwarz|grau/i, '⚫'],
-  [/sperr/i, '🛋️'],
-  [/grün|garten|baum/i, '🌿'],
+/** Farbe der Tonne je Abfallart; ohne Treffer eine neutrale graue Tonne. */
+const WASTE_BINS: [RegExp, string][] = [
+  [/bio/i, '#8d6e63'],
+  [/papier|blau/i, '#1e88e5'],
+  [/gelb|wertstoff|verpackung/i, '#fdd835'],
+  [/rest|schwarz|grau/i, '#546e7a'],
+  [/sperr/i, '#a1887f'],
+  [/grün|garten|baum/i, '#43a047'],
 ];
 
-export const wasteIcon = (summary: string) => WASTE_ICONS.find(([re]) => re.test(summary))?.[1] ?? '🗑️';
+export const wasteColor = (summary: string) => WASTE_BINS.find(([re]) => re.test(summary))?.[1] ?? '#90a4ae';
 
 export interface Parcel {
   number: string;

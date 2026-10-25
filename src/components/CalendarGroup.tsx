@@ -2,7 +2,8 @@ import type { Connection, HassEntities } from 'home-assistant-js-websocket';
 import { useCalendarEvents } from '../ha';
 import type { Block } from '../types';
 import { ThemeArt, type Theme } from './ThemeArt';
-import { carrierLabel, dayLabel, etaLabel, occurrences, parcelsOf, wasteIcon } from '../calendar';
+import { carrierLabel, dayLabel, etaLabel, occurrences, parcelsOf, wasteColor } from '../calendar';
+import { BinIcon } from './BinIcon';
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
@@ -56,7 +57,7 @@ function Waste({ entities, connection }: { entities: string[]; connection?: Conn
       <ul class="rows">
         {items.map((o) => (
           <li key={`${o.date.getTime()}${o.summary}`}>
-            <span class="row-icon" aria-hidden="true">{wasteIcon(o.summary)}</span>
+            <span class="row-icon" aria-hidden="true"><BinIcon color={wasteColor(o.summary)} /></span>
             <span class="row-main">{o.summary}</span>
             <span class="row-side">{dayLabel(o.date)}</span>
           </li>
@@ -153,6 +154,7 @@ function League({ id, entities }: { id: string; entities: HassEntities }) {
                 </span>
                 <span class="row-main versus">
                   <Team name={m.home_short || m.home} logo={m.home_logo} />
+                  <span class="vs">–</span>
                   <Team name={m.away_short || m.away} logo={m.away_logo} />
                 </span>
               </li>
