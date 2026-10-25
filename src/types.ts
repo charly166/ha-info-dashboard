@@ -1,6 +1,15 @@
 /** Konfiguration, die die Integration per WebSocket liefert. */
 
-export type BlockType = 'weather_report' | 'weather_station' | 'indoor' | 'warnings' | 'pollen' | 'calendar';
+export type BlockType =
+  | 'weather_report'
+  | 'weather_station'
+  | 'indoor'
+  | 'warnings'
+  | 'pollen'
+  | 'birthdays'
+  | 'waste'
+  | 'parcels'
+  | 'league';
 
 export interface Block {
   id: string;
@@ -13,6 +22,8 @@ export interface Block {
 export interface DashboardSettings {
   /** on: immer, auto: folgt „Bewegung reduzieren“, off: nie */
   animation: 'on' | 'auto' | 'off';
+  /** Name des Panels in der Seitenleiste */
+  title?: string;
 }
 
 export interface DashboardConfig {

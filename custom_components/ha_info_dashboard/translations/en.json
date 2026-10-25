@@ -144,11 +144,16 @@
     "step": {
       "init": {
         "title": "Settings",
-        "description": "“Always on” animates even when the device asks to reduce motion. “Automatic” respects that system setting.",
+        "description": "Name and icon of the panel in the sidebar. You can also use the cards in any dashboard, or add a ready-made dashboard with “Add dashboard → HA Info Dashboard”.",
         "data": {
+          "panel_title": "Name in the sidebar",
+          "panel_icon": "Icon",
           "animation": "Sky animation"
         }
       }
+    },
+    "error": {
+      "title_required": "Please enter a name."
     }
   },
   "selector": {

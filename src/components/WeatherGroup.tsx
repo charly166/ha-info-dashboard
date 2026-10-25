@@ -93,7 +93,7 @@ function SunTimesRow({ rising, setting }: { rising?: Date; setting?: Date }) {
   );
 }
 
-function Warnings({ warnings }: { warnings: Warning[] }) {
+export function Warnings({ warnings }: { warnings: Warning[] }) {
   if (warnings.length === 0) return null;
   const top = warnings[0];
   return (
@@ -114,7 +114,7 @@ function Warnings({ warnings }: { warnings: Warning[] }) {
   );
 }
 
-function PollenRow({ pollen }: { pollen: Pollen[] }) {
+export function PollenRow({ pollen }: { pollen: Pollen[] }) {
   const active = pollen.filter((p) => Math.max(p.today, p.tomorrow, p.inTwoDays) > 0);
   const level = (v: number) => (v <= 0 ? 'none' : v <= 1 ? 'low' : v <= 2 ? 'mid' : 'high');
   return (
@@ -150,15 +150,40 @@ function co2Tone(ppm: number | undefined) {
   return { label: 'schlecht', tone: 'bad' };
 }
 
+export function IndoorPanel({ cfg, entities }: { cfg: IndoorConfig; entities: HassEntities }) {
+  const indoor = resolveIndoor(entities, cfg);
+  const co2 = co2Tone(indoor.co2?.value);
+  return (
+    <section class="panel">
+      <h2>Innen</h2>
+      <div class="metrics">
+        {cfg.temperature && <Metric label="Temperatur" value={fmt(indoor.temperature, 1)} />}
+        {cfg.humidity && <Metric label="Luftfeuchte" value={fmt(indoor.humidity)} />}
+        {cfg.co2 && <Metric label="CO₂" value={`${fmt(indoor.co2)}${co2.label ? ` · ${co2.label}` : ''}`} tone={co2.tone} />}
+      </div>
+    </section>
+  );
+}
+
+export interface WeatherShow {
+  warnings?: boolean;
+  pollen?: boolean;
+  indoor?: boolean;
+}
+
 export function WeatherGroup({
   blocks,
   entities,
   connection,
+  show = {},
 }: {
   blocks: Block[];
   entities: HassEntities;
   connection?: Connection;
+  /** Was die Karte zusätzlich zeigt; alle drei sind standardmäßig an. */
+  show?: WeatherShow;
 }) {
+  const { warnings: showWarnings = true, pollen: showPollen = true, indoor: showIndoor = true } = show;
   const data = (type: Block['type']) => blocks.find((b) => b.type === type)?.data;
   const weatherId = data('weather_report')?.weather as string | undefined;
   const station = data('weather_station') as StationConfig | undefined;
@@ -173,8 +198,6 @@ export function WeatherGroup({
   const hourly = currentAndNext(useForecast(connection, weatherId, 'hourly'), 5);
   const warnings = resolveWarnings(entities, warningIds);
   const pollen = resolvePollen(entities, pollenIds);
-  const indoor = resolveIndoor(entities, indoorCfg);
-  const co2 = co2Tone(indoor.co2?.value);
   const raining = (o.rain?.value ?? 0) > 0;
 
   const today = forecast[0];
@@ -184,7 +207,7 @@ export function WeatherGroup({
   return (
     <section class="card weather-group">
       <Sky kind={kindOf(w?.state)} tod={timeOfDay(entities)}>
-        <Warnings warnings={warnings} />
+        {showWarnings && <Warnings warnings={warnings} />}
 
         {(weatherId || station) && (
           <>
@@ -278,21 +301,68 @@ export function WeatherGroup({
           </section>
         )}
 
-        {pollenIds && <PollenRow pollen={pollen} />}
+        {showPollen && pollenIds && <PollenRow pollen={pollen} />}
 
-        {indoorCfg && (
-          <section class="panel">
-            <h2>Innen</h2>
-            <div class="metrics">
-              {indoorCfg.temperature && <Metric label="Temperatur" value={fmt(indoor.temperature, 1)} />}
-              {indoorCfg.humidity && <Metric label="Luftfeuchte" value={fmt(indoor.humidity)} />}
-              {indoorCfg.co2 && (
-                <Metric label="CO₂" value={`${fmt(indoor.co2)}${co2.label ? ` · ${co2.label}` : ''}`} tone={co2.tone} />
-              )}
-            </div>
-          </section>
-        )}
+        {showIndoor && indoorCfg && <IndoorPanel cfg={indoorCfg} entities={entities} />}
       </Sky>
     </section>
+  );
+}
+
+/** Himmel passend zur Wetterlage, auch für Karten ohne eigenen Wetterbericht. */
+function SkyFor({
+  blocks,
+  entities,
+  children,
+}: {
+  blocks: Block[];
+  entities: HassEntities;
+  children: preact.ComponentChildren;
+}) {
+  const weatherId = blocks.find((b) => b.type === 'weather_report')?.data.weather as string | undefined;
+  return (
+    <section class="card weather-group">
+      <Sky compact kind={kindOf(weatherId ? entities[weatherId]?.state : undefined)} tod={timeOfDay(entities)}>
+        {children}
+      </Sky>
+    </section>
+  );
+}
+
+export function WarningsCard({ blocks, entities }: { blocks: Block[]; entities: HassEntities }) {
+  const ids = blocks.find((b) => b.type === 'warnings')?.data.entities as string[] | undefined;
+  if (!ids) return null;
+  const warnings = resolveWarnings(entities, ids);
+  return (
+    <SkyFor blocks={blocks} entities={entities}>
+      {warnings.length > 0 ? (
+        <Warnings warnings={warnings} />
+      ) : (
+        <section class="panel">
+          <h2>Wetterwarnungen</h2>
+          <p class="muted">Keine Warnmeldungen aktiv.</p>
+        </section>
+      )}
+    </SkyFor>
+  );
+}
+
+export function PollenCard({ blocks, entities }: { blocks: Block[]; entities: HassEntities }) {
+  const ids = blocks.find((b) => b.type === 'pollen')?.data.entities as string[] | undefined;
+  if (!ids) return null;
+  return (
+    <SkyFor blocks={blocks} entities={entities}>
+      <PollenRow pollen={resolvePollen(entities, ids)} />
+    </SkyFor>
+  );
+}
+
+export function IndoorCard({ blocks, entities }: { blocks: Block[]; entities: HassEntities }) {
+  const cfg = blocks.find((b) => b.type === 'indoor')?.data as IndoorConfig | undefined;
+  if (!cfg) return null;
+  return (
+    <SkyFor blocks={blocks} entities={entities}>
+      <IndoorPanel cfg={cfg} entities={entities} />
+    </SkyFor>
   );
 }

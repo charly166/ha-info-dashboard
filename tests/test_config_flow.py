@@ -180,7 +180,7 @@ async def test_websocket_unconfigured(hass, hass_ws_client):
     assert (await client.receive_json())["event"] == {
         "configured": False,
         "blocks": [],
-        "settings": {"animation": "on"},
+        "settings": {"animation": "on", "title": "Info"},
     }
 
 
@@ -197,7 +197,7 @@ async def test_options_flow_sets_animation_and_pushes_it(home, hass_ws_client):
     client = await hass_ws_client(home)
     await client.send_json({"id": 1, "type": f"{DOMAIN}/subscribe_config"})
     await client.receive_json()
-    assert (await client.receive_json())["event"]["settings"] == {"animation": "on"}
+    assert (await client.receive_json())["event"]["settings"] == {"animation": "on", "title": "Info"}
 
     entry = home.config_entries.async_entries(DOMAIN)[0]
     result = await home.config_entries.options.async_init(entry.entry_id)
@@ -205,4 +205,4 @@ async def test_options_flow_sets_animation_and_pushes_it(home, hass_ws_client):
     result = await home.config_entries.options.async_configure(result["flow_id"], {"animation": "auto"})
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await home.async_block_till_done()
-    assert (await client.receive_json())["event"]["settings"] == {"animation": "auto"}
+    assert (await client.receive_json())["event"]["settings"] == {"animation": "auto", "title": "Info"}

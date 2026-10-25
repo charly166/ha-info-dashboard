@@ -31,6 +31,27 @@ Unter **Kalender-Info hinzufügen** wählst du zuerst die Art und danach die vor
 | Pakete | HACS-Erweiterung [Paket Tracker](https://github.com/SoerenKaiser99/parcel_tracker) (Sensoren „Pakete unterwegs“ und „Pakete zugestellt heute“) | alle offenen Pakete und heute zugestellte |
 | Fußball-Liga | HACS-Erweiterung [HA Liga Tracker](https://github.com/charly166/ha-ligatracker) (Sensor „Spieltage“ je Liga) | der nächste Spieltag |
 
+## Karten und eigenes Dashboard
+
+Das Panel **Info** in der Seitenleiste ordnet die Karten selbst an. Name und Icon änderst du unter **Einstellungen → Geräte & Dienste → HA Info Dashboard → Konfigurieren**.
+
+Möchtest du das Layout selbst bestimmen, gibt es jeden Baustein auch als normale Dashboard-Karte. Die Integration lädt die Karten auf jeder Seite, du musst keine Ressource eintragen. Sie erscheinen in der Kartenauswahl, oder du trägst sie im YAML ein:
+
+| Karte | Inhalt | Optionen |
+|---|---|---|
+| `custom:ha-info-weather-card` | Wetterbericht mit Himmel, Messwerten, Sonnenzeiten, Prognose | `show_warnings`, `show_pollen`, `show_indoor` (jeweils `false` blendet aus) |
+| `custom:ha-info-warnings-card` | DWD-Warnmeldungen | |
+| `custom:ha-info-pollen-card` | Pollenflug | |
+| `custom:ha-info-indoor-card` | Temperatur, Luftfeuchte, CO₂ im Haus | |
+| `custom:ha-info-birthdays-card` | Geburtstage | |
+| `custom:ha-info-waste-card` | Müllabfuhr | |
+| `custom:ha-info-parcels-card` | Pakete | |
+| `custom:ha-info-league-card` | Spieltag einer Liga | `entity`: Sensor „Spieltage“ der Liga (ohne Angabe die erste) |
+
+Eine Karte zeigt, was du im Setup eingerichtet hast. Ist ihr Baustein nicht eingerichtet, weist sie darauf hin.
+
+**Fertiges Start-Dashboard:** Unter **Einstellungen → Dashboards → Dashboard hinzufügen** wählst du **HA Info Dashboard**. Das Dashboard wird aus deinen Bausteinen erzeugt (Wetter, Termine, Pakete und Ligen in drei Spalten). Mit **Dashboard übernehmen** im Bearbeiten-Menü wird es zu einem normalen Dashboard, das du frei anordnen, benennen und mit Icon versehen kannst.
+
 ## Installation über HACS
 
 1. In HACS → Dreipunkt-Menü → **Benutzerdefinierte Repositories** dieses Repository hinzufügen (Typ **Integration**) und **HA Info Dashboard** herunterladen.

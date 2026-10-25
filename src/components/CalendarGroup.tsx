@@ -31,9 +31,25 @@ function Card({
   );
 }
 
-function Birthdays({ entities, connection }: { entities: string[]; connection?: Connection }) {
+function Empty({ theme, title, text }: { theme: Theme; title: string; text: string }) {
+  return (
+    <Card theme={theme} title={title}>
+      <p class="empty">{text}</p>
+    </Card>
+  );
+}
+
+function Birthdays({
+  entities,
+  connection,
+  standalone,
+}: {
+  entities: string[];
+  connection?: Connection;
+  standalone?: boolean;
+}) {
   const items = occurrences(useCalendarEvents(connection, entities, 3));
-  if (items.length === 0) return null;
+  if (items.length === 0) return standalone ? <Empty theme="birthdays" title="Geburtstage" text="Keine Geburtstage in den nächsten 3 Tagen." /> : null;
   return (
     <Card theme="birthdays" title="Geburtstage">
       <ul class="rows">
@@ -49,9 +65,17 @@ function Birthdays({ entities, connection }: { entities: string[]; connection?: 
   );
 }
 
-function Waste({ entities, connection }: { entities: string[]; connection?: Connection }) {
+function Waste({
+  entities,
+  connection,
+  standalone,
+}: {
+  entities: string[];
+  connection?: Connection;
+  standalone?: boolean;
+}) {
   const items = occurrences(useCalendarEvents(connection, entities, 7));
-  if (items.length === 0) return null;
+  if (items.length === 0) return standalone ? <Empty theme="waste" title="Müllabfuhr" text="Keine Abholungen in den nächsten 7 Tagen." /> : null;
   return (
     <Card theme="waste" title="Müllabfuhr">
       <ul class="rows">
@@ -67,13 +91,22 @@ function Waste({ entities, connection }: { entities: string[]; connection?: Conn
   );
 }
 
-function Parcels({ data, entities }: { data: Record<string, unknown>; entities: HassEntities }) {
+function Parcels({
+  data,
+  entities,
+  standalone,
+}: {
+  data: Record<string, unknown>;
+  entities: HassEntities;
+  standalone?: boolean;
+}) {
   const open = parcelsOf(entities, data.open as string | undefined);
   const delivered = parcelsOf(entities, data.delivered as string | undefined);
   // Ein Paket, das schon als zugestellt gilt, soll nicht zusätzlich als offen erscheinen.
   const deliveredNumbers = new Set(delivered.map((p) => p.number));
   const pending = open.filter((p) => !deliveredNumbers.has(p.number));
-  if (pending.length === 0 && delivered.length === 0) return null;
+  if (pending.length === 0 && delivered.length === 0)
+    return standalone ? <Empty theme="parcels" title="Pakete" text="Keine Pakete unterwegs." /> : null;
   return (
     <Card theme="parcels" title="Pakete" note="Daten: Paket Tracker (HACS)">
       <ul class="rows">
@@ -129,10 +162,11 @@ function Team({ name, logo }: { name: string; logo?: string }) {
   );
 }
 
-function League({ id, entities }: { id: string; entities: HassEntities }) {
+function League({ id, entities, standalone }: { id: string; entities: HassEntities; standalone?: boolean }) {
   const data = entities[id]?.attributes as LeagueOverview | undefined;
   const day = data?.next;
-  if (!day || day.matches.length === 0) return null;
+  if (!day || day.matches.length === 0)
+    return standalone ? <Empty theme="league" title={data?.competition?.name ?? 'Liga'} text="Kein Spieltag geplant." /> : null;
 
   const byDay = new Map<string, LeagueMatch[]>();
   for (const m of [...day.matches].sort((a, b) => a.kickoff.localeCompare(b.kickoff))) {
@@ -188,4 +222,29 @@ export function CalendarGroup({
       {league && (league.entities as string[]).map((id) => <League key={id} id={id} entities={entities} />)}
     </>
   );
+}
+
+type CardProps = { blocks: Block[]; entities: HassEntities; connection?: Connection };
+const kindData = (blocks: Block[], kind: string) => blocks.find((b) => b.data.kind === kind)?.data;
+
+export function BirthdaysCard({ blocks, connection }: CardProps) {
+  const data = kindData(blocks, 'birthdays');
+  return data ? <Birthdays entities={data.entities as string[]} connection={connection} standalone /> : null;
+}
+
+export function WasteCard({ blocks, connection }: CardProps) {
+  const data = kindData(blocks, 'waste');
+  return data ? <Waste entities={data.entities as string[]} connection={connection} standalone /> : null;
+}
+
+export function ParcelsCard({ blocks, entities }: CardProps) {
+  const data = kindData(blocks, 'parcels');
+  return data ? <Parcels data={data} entities={entities} standalone /> : null;
+}
+
+/** Eine Liga; ohne `entity` die erste eingerichtete. */
+export function LeagueCard({ blocks, entities, entity }: CardProps & { entity?: string }) {
+  const ids = (kindData(blocks, 'league')?.entities as string[] | undefined) ?? [];
+  const id = entity && ids.includes(entity) ? entity : ids[0];
+  return id ? <League id={id} entities={entities} standalone /> : null;
 }

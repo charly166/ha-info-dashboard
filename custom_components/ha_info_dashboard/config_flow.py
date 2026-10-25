@@ -21,9 +21,11 @@ from homeassistant.core import callback
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
+    IconSelector,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    TextSelector,
 )
 
 from .const import (
@@ -31,12 +33,16 @@ from .const import (
     ANIMATION_OPTIONS,
     BIRTHDAYS,
     CONF_ANIMATION,
+    CONF_PANEL_ICON,
+    CONF_PANEL_TITLE,
     DOMAIN,
     GROUP_KINDS,
     GROUP_TITLES,
     INDOOR,
     KIND_TITLES,
     LEAGUE,
+    PANEL_ICON,
+    PANEL_TITLE,
     PARCELS,
     POLLEN,
     WARNINGS,
@@ -216,24 +222,38 @@ SUBENTRY_FLOWS: dict[str, type[ConfigSubentryFlow]] = {g: _make_group_flow(g) fo
 
 
 class HaInfoDashboardOptionsFlow(OptionsFlow):
-    """Allgemeine Einstellungen des Dashboards."""
+    """Allgemeine Einstellungen: Name und Icon in der Seitenleiste, Animation."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        options = self.config_entry.options
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
-        current = self.config_entry.options.get(CONF_ANIMATION, ANIMATION_ON)
+            title = (user_input.get(CONF_PANEL_TITLE) or "").strip()
+            if not title:
+                errors[CONF_PANEL_TITLE] = "title_required"
+            else:
+                return self.async_create_entry(
+                    data={
+                        CONF_ANIMATION: user_input[CONF_ANIMATION],
+                        CONF_PANEL_TITLE: title,
+                        CONF_PANEL_ICON: user_input.get(CONF_PANEL_ICON) or PANEL_ICON,
+                    }
+                )
+            options = user_input
         schema = vol.Schema(
             {
-                vol.Required(CONF_ANIMATION, default=current): SelectSelector(
+                vol.Required(CONF_PANEL_TITLE, default=options.get(CONF_PANEL_TITLE, PANEL_TITLE)): TextSelector(),
+                vol.Required(CONF_PANEL_ICON, default=options.get(CONF_PANEL_ICON, PANEL_ICON)): IconSelector(),
+                vol.Required(CONF_ANIMATION, default=options.get(CONF_ANIMATION, ANIMATION_ON)): SelectSelector(
                     SelectSelectorConfig(
                         options=ANIMATION_OPTIONS,
                         translation_key=CONF_ANIMATION,
                         mode=SelectSelectorMode.DROPDOWN,
                     )
-                )
+                ),
             }
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)
 
 
 class HaInfoDashboardConfigFlow(ConfigFlow, domain=DOMAIN):

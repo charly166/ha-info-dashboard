@@ -18,7 +18,7 @@ export function DashboardView({ hass, narrow }: { hass: PanelHass; narrow: boole
   const topbar = (
     <header class="topbar">
       <ha-menu-button hass={hass} narrow={narrow} />
-      <span>HA Info Dashboard</span>
+      <span>{config?.settings?.title ?? 'HA Info Dashboard'}</span>
     </header>
   );
 

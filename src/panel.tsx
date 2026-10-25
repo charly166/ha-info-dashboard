@@ -1,6 +1,7 @@
 import { render } from 'preact';
 import { DashboardView, type PanelHass } from './components/DashboardView';
-import styles from './style.css?inline';
+import { registerCards } from './cards';
+import { adoptStyles } from './shell';
 
 const TAG = 'ha-info-dashboard';
 
@@ -15,9 +16,7 @@ class HaInfoDashboard extends HTMLElement {
 
   constructor() {
     super();
-    const style = document.createElement('style');
-    style.textContent = styles;
-    this.root.append(style);
+    adoptStyles(this.root);
     const mount = document.createElement('div');
     mount.className = 'root';
     this.root.append(mount);
@@ -34,12 +33,23 @@ class HaInfoDashboard extends HTMLElement {
     this.update();
   }
 
+  connectedCallback() {
+    this.update();
+  }
+
+  /** Beendet die Abonnements, wenn das Panel verlassen wird. */
+  disconnectedCallback() {
+    const mount = this.root.querySelector('.root');
+    if (mount) render(null, mount);
+  }
+
   private update() {
     const mount = this.root.querySelector('.root');
-    if (mount && this._hass) {
+    if (mount && this._hass && this.isConnected) {
       render(<DashboardView hass={this._hass} narrow={this._narrow} />, mount);
     }
   }
 }
 
 if (!customElements.get(TAG)) customElements.define(TAG, HaInfoDashboard);
+registerCards();

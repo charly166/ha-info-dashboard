@@ -144,11 +144,16 @@
     "step": {
       "init": {
         "title": "Einstellungen",
-        "description": "„Immer an“ zeigt die Animation auch dann, wenn das Gerät „Bewegung reduzieren“ meldet. „Automatisch“ beachtet diese Systemeinstellung.",
+        "description": "Name und Icon des Panels in der Seitenleiste. Die Karten kannst du außerdem in jedem Dashboard verwenden oder mit „Dashboard hinzufügen → HA Info Dashboard“ als fertiges Dashboard anlegen.",
         "data": {
+          "panel_title": "Name in der Seitenleiste",
+          "panel_icon": "Icon",
           "animation": "Animation des Himmels"
         }
       }
+    },
+    "error": {
+      "title_required": "Bitte einen Namen eingeben."
     }
   },
   "selector": {

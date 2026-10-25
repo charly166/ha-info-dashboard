@@ -52,6 +52,8 @@ KIND_TITLES: dict[str, str] = {**SUBENTRY_TITLES, **CALENDAR_KIND_TITLES}
 GROUP_TITLES: dict[str, str] = {WEATHER: "Wetter", CALENDAR: "Kalender-Infos"}
 
 CONF_ANIMATION = "animation"
+CONF_PANEL_TITLE = "panel_title"
+CONF_PANEL_ICON = "panel_icon"
 ANIMATION_ON = "on"
 ANIMATION_AUTO = "auto"
 ANIMATION_OFF = "off"

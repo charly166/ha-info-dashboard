@@ -24,6 +24,8 @@ from .const import (
     ANIMATION_ON,
     CALENDAR,
     CONF_ANIMATION,
+    CONF_PANEL_ICON,
+    CONF_PANEL_TITLE,
     DOMAIN,
     PANEL_ELEMENT,
     PANEL_ICON,
@@ -55,8 +57,12 @@ def build_config(hass: HomeAssistant) -> dict[str, Any]:
         for entry in entries
         for subentry in entry.subentries.values()
     ]
-    animation = entries[0].options.get(CONF_ANIMATION, ANIMATION_ON) if entries else ANIMATION_ON
-    return {"configured": bool(entries), "blocks": blocks, "settings": {"animation": animation}}
+    options = entries[0].options if entries else {}
+    settings = {
+        "animation": options.get(CONF_ANIMATION, ANIMATION_ON),
+        "title": options.get(CONF_PANEL_TITLE) or PANEL_TITLE,
+    }
+    return {"configured": bool(entries), "blocks": blocks, "settings": settings}
 
 
 @websocket_api.websocket_command({vol.Required("type"): f"{DOMAIN}/subscribe_config"})
@@ -71,6 +77,13 @@ def ws_subscribe_config(hass: HomeAssistant, connection: websocket_api.ActiveCon
     connection.subscriptions[msg["id"]] = async_dispatcher_connect(hass, SIGNAL_CONFIG_UPDATED, forward)
     connection.send_result(msg["id"])
     forward()
+
+
+@websocket_api.websocket_command({vol.Required("type"): f"{DOMAIN}/get_config"})
+@callback
+def ws_get_config(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]) -> None:
+    """Einmalige Abfrage der Konfiguration, z. B. für die Dashboard-Strategie."""
+    connection.send_result(msg["id"], build_config(hass))
 
 
 def _iso(value: Any) -> str:
@@ -125,6 +138,7 @@ async def ws_calendar_events(hass: HomeAssistant, connection: websocket_api.Acti
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     websocket_api.async_register_command(hass, ws_subscribe_config)
+    websocket_api.async_register_command(hass, ws_get_config)
     websocket_api.async_register_command(hass, ws_calendar_events)
     await hass.http.async_register_static_paths(
         [StaticPathConfig(URL_BASE, str(STATIC_DIR), cache_headers=False)]
@@ -152,19 +166,44 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    version = (await async_get_integration(hass, DOMAIN)).version
+def _panel_settings(entry: ConfigEntry) -> tuple[str, str]:
+    return (
+        entry.options.get(CONF_PANEL_TITLE) or PANEL_TITLE,
+        entry.options.get(CONF_PANEL_ICON) or PANEL_ICON,
+    )
+
+
+async def _async_register_panel(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Legt das Seitenleisten-Panel mit dem gewählten Titel und Icon an; ein vorhandenes wird ersetzt."""
+    title, icon = _panel_settings(entry)
+    data = hass.data.setdefault(DOMAIN, {})
+    if data.get("panel") == (title, icon):
+        return
+    if data.get("panel"):
+        frontend.async_remove_panel(hass, PANEL_URL_PATH)
     await panel_custom.async_register_panel(
         hass,
         frontend_url_path=PANEL_URL_PATH,
         webcomponent_name=PANEL_ELEMENT,
-        module_url=f"{URL_BASE}/{MODULE_FILE}?v={version}",
-        sidebar_title=PANEL_TITLE,
-        sidebar_icon=PANEL_ICON,
+        module_url=data["module_url"],
+        sidebar_title=title,
+        sidebar_icon=icon,
         require_admin=False,
     )
+    data["panel"] = (title, icon)
 
-    async def _config_changed(hass: HomeAssistant, _entry: ConfigEntry) -> None:
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    version = (await async_get_integration(hass, DOMAIN)).version
+    module_url = f"{URL_BASE}/{MODULE_FILE}?v={version}"
+    data = hass.data.setdefault(DOMAIN, {})
+    data["module_url"] = module_url
+    # Auf jeder Seite laden, damit die Karten in allen Dashboards verfügbar sind.
+    frontend.add_extra_js_url(hass, module_url)
+    await _async_register_panel(hass, entry)
+
+    async def _config_changed(hass: HomeAssistant, entry: ConfigEntry) -> None:
+        await _async_register_panel(hass, entry)
         async_dispatcher_send(hass, SIGNAL_CONFIG_UPDATED)
 
     entry.async_on_unload(entry.add_update_listener(_config_changed))
@@ -173,6 +212,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    frontend.async_remove_panel(hass, PANEL_URL_PATH)
+    data = hass.data.get(DOMAIN, {})
+    if data.pop("panel", None):
+        frontend.async_remove_panel(hass, PANEL_URL_PATH)
+    if module_url := data.pop("module_url", None):
+        frontend.remove_extra_js_url(hass, module_url)
     async_dispatcher_send(hass, SIGNAL_CONFIG_UPDATED)
     return True

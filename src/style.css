@@ -79,6 +79,8 @@ small { color: var(--hid-muted); font-weight: 400; }
 }
 .themed .rows { background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 12px; padding: 10px 12px; }
 
+.themed .empty { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+
 .theme-birthdays { background: linear-gradient(160deg, #5b3fd6, #d9468f); }
 .theme-waste { background: linear-gradient(180deg, #4f94c8, #3f8f5e 55%, #2c7a4f); }
 .theme-parcels { background: linear-gradient(180deg, #8d6a45, #b98a58); }
@@ -135,6 +137,7 @@ small { color: var(--hid-muted); font-weight: 400; }
 
 /* ---- Himmel ---- */
 .sky { position: relative; overflow: hidden; color: #fff; min-height: 300px; isolation: isolate; flex: 1; }
+.sky.compact { min-height: 0; }
 .sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.28)); z-index: 1; }
 .sky-layer { position: absolute; inset: 0; z-index: 0; container-type: size; }
 .sky-layer i { position: absolute; display: block; }

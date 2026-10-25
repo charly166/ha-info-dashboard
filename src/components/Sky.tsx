@@ -65,14 +65,25 @@ const rnd = (i: number, salt: number) => {
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 
 /** Animierter Himmel: Farbverlauf, Sonne/Mond/Sterne, Wolken, Regen, Schnee, Nebel, Blitze. */
-export function Sky({ kind, tod, children }: { kind: Kind; tod: TimeOfDay; children?: preact.ComponentChildren }) {
+export function Sky({
+  kind,
+  tod,
+  compact,
+  children,
+}: {
+  kind: Kind;
+  tod: TimeOfDay;
+  /** ohne Mindesthöhe, für kleine eigenständige Karten */
+  compact?: boolean;
+  children?: preact.ComponentChildren;
+}) {
   const [a, b] = PALETTE[tod][kind];
   const showBody = kind === 'clear' || kind === 'partly';
   const showStars = tod !== 'day' && (kind === 'clear' || kind === 'partly');
   const dark = kind === 'rain' || kind === 'storm';
 
   return (
-    <div class={`sky ${tod} ${kind}`} style={{ background: `linear-gradient(180deg, ${a}, ${b})` }}>
+    <div class={`sky ${tod} ${kind}${compact ? ' compact' : ''}`} style={{ background: `linear-gradient(180deg, ${a}, ${b})` }}>
       <div class="sky-layer" aria-hidden="true">
         {showStars &&
           range(28).map((i) => (
