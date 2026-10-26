@@ -2,6 +2,12 @@
   <img src="assets/logo.webp" alt="HA Info Dashboard – Ihr zentrales Informations-Zentrum" width="600">
 </p>
 
+<p align="center">
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Custom-41BDF5.svg" alt="hacs_badge"></a>
+  <a href="https://github.com/charly166/ha-info-dashboard/releases"><img src="https://img.shields.io/github/v/release/charly166/ha-info-dashboard" alt="GitHub Release"></a>
+  <a href="https://github.com/charly166/ha-info-dashboard/blob/main/LICENSE"><img src="https://img.shields.io/github/license/charly166/ha-info-dashboard" alt="License"></a>
+</p>
+
 # ha-info-dashboard
 
 Informations-Dashboard für Home Assistant: eine statische Single-Page-App (Vite, Preact, TypeScript), die per WebSocket live mit Home Assistant spricht. Das Layout passt sich an: 1 Spalte (Smartphone), 3 Spalten (Wand-Tablet), maximal 4 Spalten (Browser).
