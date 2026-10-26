@@ -1,6 +1,8 @@
 import type { Connection, HassEntities } from 'home-assistant-js-websocket';
 import { useCalendarEvents } from '../ha';
 import type { Block } from '../types';
+import { useContext } from 'preact/hooks';
+import { BackgroundContext } from '../context';
 import { ThemeArt, type Theme } from './ThemeArt';
 import { carrierLabel, dayLabel, etaLabel, occurrences, parcelsOf, wasteColor } from '../calendar';
 import { BinIcon } from './BinIcon';
@@ -19,9 +21,10 @@ function Card({
   note?: string;
   children: preact.ComponentChildren;
 }) {
+  const background = useContext(BackgroundContext);
   return (
-    <section class={`card info-card themed theme-${theme}`}>
-      <ThemeArt theme={theme} />
+    <section class={`card info-card${background ? ` themed theme-${theme}` : ''}`}>
+      {background && <ThemeArt theme={theme} />}
       <div class="card-body">
         <h2>{title}</h2>
         {children}

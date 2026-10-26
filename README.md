@@ -56,6 +56,15 @@ Möchtest du das Layout selbst bestimmen, gibt es jeden Baustein auch als normal
 
 Eine Karte zeigt, was du im Setup eingerichtet hast. Ist ihr Baustein nicht eingerichtet, weist sie darauf hin.
 
+**Hintergrund und Animation je Karte:** Alle Karten haben einen zarten, milchigen Hintergrund zum Thema (Himmel zur Wetterlage, Wimpelkette, Müllwagen, Pakete, Spielfeld). Er nimmt die Farben deines Themes an und passt sich damit Hell und Dunkel an. Im visuellen Karten-Editor oder im YAML stellst du ihn je Karte ein:
+
+| Option | Wirkung |
+|---|---|
+| `background: false` | schaltet den Hintergrund (Himmel, Motiv, Tönung) dieser Karte aus; die Karte sieht dann aus wie eine normale HA-Karte |
+| `animation: on` / `auto` / `off` | überschreibt die Animations-Einstellung der Integration für diese Karte (nur Wetter-Karten haben eine Animation) |
+
+Die Stärke der Tönung steht in `--hid-tint` (Standard `30%`); kleiner ist blasser. Mit `card_mod` kannst du sie pro Karte ändern.
+
 **Fertiges Start-Dashboard:** Unter **Einstellungen → Dashboards → Dashboard hinzufügen** wählst du **HA Info Dashboard**. Das Dashboard wird aus deinen Bausteinen erzeugt (Wetter, Termine, Pakete und Ligen in drei Spalten). Mit **Dashboard übernehmen** im Bearbeiten-Menü wird es zu einem normalen Dashboard, das du frei anordnen, benennen und mit Icon versehen kannst.
 
 ## Installation über HACS

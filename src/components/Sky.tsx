@@ -1,3 +1,5 @@
+import { useContext } from 'preact/hooks';
+import { BackgroundContext } from '../context';
 import type { TimeOfDay } from '../weather';
 
 export type Kind = 'clear' | 'partly' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog';
@@ -78,13 +80,17 @@ export function Sky({
   children?: preact.ComponentChildren;
 }) {
   const [a, b] = PALETTE[tod][kind];
+  const background = useContext(BackgroundContext);
   const showBody = kind === 'clear' || kind === 'partly';
   const showStars = tod !== 'day' && (kind === 'clear' || kind === 'partly');
   const dark = kind === 'rain' || kind === 'storm';
 
   return (
-    <div class={`sky ${tod} ${kind}${compact ? ' compact' : ''}`} style={{ background: `linear-gradient(180deg, ${a}, ${b})` }}>
-      <div class="sky-layer" aria-hidden="true">
+    <div
+      class={`sky ${tod} ${kind}${compact ? ' compact' : ''}${background ? '' : ' nobg'}`}
+      style={{ '--sky-a': a, '--sky-b': b }}
+    >
+      {background && <div class="sky-layer" aria-hidden="true">
         {showStars &&
           range(28).map((i) => (
             <i
@@ -150,7 +156,7 @@ export function Sky({
         )}
 
         {kind === 'storm' && <i class="flash" />}
-      </div>
+      </div>}
       <div class="sky-content">{children}</div>
     </div>
   );

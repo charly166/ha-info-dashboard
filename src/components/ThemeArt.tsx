@@ -137,15 +137,15 @@ function League() {
   return (
     <>
       <svg class="art" viewBox="0 0 320 400" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-        <g fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2">
+        <g fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-width="2">
           <line x1="0" y1="1" x2="320" y2="1" />
           <circle cx="160" cy="1" r="46" />
           <line x1="14" y1="0" x2="14" y2="400" />
         </g>
-        <circle cx="160" cy="1" r="3" fill="rgba(255,255,255,0.6)" />
+        <circle cx="160" cy="1" r="3" fill="currentColor" fill-opacity="0.6" />
       </svg>
       <svg class="art art-bottom" viewBox="0 0 80 80" preserveAspectRatio="xMinYMax meet" aria-hidden="true">
-        <path d="M14 80 A40 40 0 0 0 54 40" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" />
+        <path d="M14 80 A40 40 0 0 0 54 40" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-width="2" />
         <line x1="14" y1="80" x2="14" y2="44" stroke="#f5f5f5" stroke-width="2" />
         <path d="M14 44 L30 50 L14 56 Z" fill="#ff5252" />
       </svg>

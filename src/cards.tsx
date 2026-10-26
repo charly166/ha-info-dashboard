@@ -2,6 +2,8 @@ import { render } from 'preact';
 import type { Connection, HassEntities } from 'home-assistant-js-websocket';
 import { BirthdaysCard, LeagueCard, ParcelsCard, WasteCard } from './components/CalendarGroup';
 import { IndoorCard, PollenCard, WarningsCard, WeatherGroup } from './components/WeatherGroup';
+import { BackgroundContext } from './context';
+import { InfoCardEditor, registerEditor } from './editor';
 import { useDashboardConfig } from './ha';
 import { adoptStyles } from './shell';
 import { buildDashboard } from './strategy';
@@ -127,7 +129,14 @@ function CardRoot({ hass, def, config }: { hass: CardHass; def: CardDef; config:
   const dashboard: DashboardConfig | undefined = useDashboardConfig(hass.connection);
   if (!dashboard) return null;
   const body = def.render({ blocks: dashboard.blocks, entities: hass.states, connection: hass.connection, config });
-  return <div class={`anim-${dashboard.settings?.animation ?? 'on'}`}>{body ?? <NotConfigured name={def.name} />}</div>;
+  const override = ['on', 'auto', 'off'].includes(config.animation as string) ? (config.animation as string) : undefined;
+  return (
+    <BackgroundContext.Provider value={config.background !== false}>
+      <div class={`anim-${override ?? dashboard.settings?.animation ?? 'on'}`}>
+        {body ?? <NotConfigured name={def.name} />}
+      </div>
+    </BackgroundContext.Provider>
+  );
 }
 
 function defineCard(def: CardDef) {
@@ -174,6 +183,13 @@ function defineCard(def: CardDef) {
       return {};
     }
 
+    /** Visueller Editor in der Kartenauswahl. */
+    static getConfigElement() {
+      const editor = document.createElement('ha-info-card-editor') as InfoCardEditor;
+      editor.cardType = def.tag;
+      return editor;
+    }
+
     private update() {
       if (this.isConnected && this._hass) render(<CardRoot hass={this._hass} def={def} config={this._config} />, this.mount);
     }
@@ -198,6 +214,7 @@ const PREVIEW =
   );
 
 export function registerCards() {
+  registerEditor();
   const w = window as unknown as { customCards?: { type: string }[]; customStrategies?: { type: string }[] };
 
   w.customCards ??= [];

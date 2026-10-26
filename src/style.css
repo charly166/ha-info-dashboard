@@ -1,6 +1,7 @@
 /* Farben kommen aus dem Home-Assistant-Theme und folgen damit der Profil-Einstellung (Auto, Hell, Dunkel). */
 :host {
   display: block;
+  color: var(--hid-text);
   --hid-bg: var(--primary-background-color, #fafafa);
   --hid-card: var(--ha-card-background, var(--card-background-color, #fff));
   --hid-text: var(--primary-text-color, #212121);
@@ -11,6 +12,10 @@
   --hid-ok: var(--success-color, #43a047);
   --hid-warn: var(--warning-color, #ffa600);
   --hid-bad: var(--error-color, #db4437);
+  /* Stärke der Hintergrundfarben über der Kartenfarbe: kleiner = blasser */
+  --hid-tint: 30%;
+  --hid-glass: color-mix(in srgb, var(--hid-text) 7%, transparent);
+  --hid-glass-border: color-mix(in srgb, var(--hid-text) 10%, transparent);
 }
 
 * { box-sizing: border-box; }
@@ -67,25 +72,34 @@ small { color: var(--hid-muted); font-weight: 400; }
 
 .card-body { padding: 14px 16px; }
 
-/* Themenbezogene Hintergründe: Farbfläche + SVG-Motiv, Text immer hell auf getönter Fläche */
-.themed { position: relative; isolation: isolate; color: #fff; border: 0; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+/* Themenbezogene Hintergründe: zarte Farbe und Motiv über der Kartenfarbe, Text in den Farben des Themes */
+.themed { position: relative; isolation: isolate; }
 .themed .card-body { position: relative; z-index: 1; }
-.themed .art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.45; }
+.themed .art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.32; color: var(--hid-text); }
 .themed .art-top { height: auto; bottom: auto; }
 .themed .art-bottom-wide { height: auto; top: auto; bottom: 0; }
 .themed .art-bottom { top: auto; height: 80px; width: 80px; }
-.themed h2, .themed h3, .themed .row-side, .themed .card-note, .themed .matchday, .themed small, .themed .muted {
-  color: rgba(255, 255, 255, 0.85);
+.themed .rows, .themed .empty {
+  background: var(--hid-glass);
+  border: 1px solid var(--hid-glass-border);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  padding: 10px 12px;
 }
-.themed .rows { background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 12px; padding: 10px 12px; }
+.themed .empty { margin: 0; }
 
-.themed .empty { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.26); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-
-.theme-birthdays { background: linear-gradient(160deg, #5b3fd6, #d9468f); }
-.theme-waste { background: linear-gradient(180deg, #4f94c8, #3f8f5e 55%, #2c7a4f); }
-.theme-parcels { background: linear-gradient(180deg, #8d6a45, #b98a58); }
+.theme-birthdays {
+  background: linear-gradient(160deg, color-mix(in srgb, #5b3fd6 var(--hid-tint), var(--hid-card)), color-mix(in srgb, #d9468f var(--hid-tint), var(--hid-card)));
+}
+.theme-waste {
+  background: linear-gradient(180deg, color-mix(in srgb, #4f94c8 var(--hid-tint), var(--hid-card)), color-mix(in srgb, #3f8f5e var(--hid-tint), var(--hid-card)) 55%, color-mix(in srgb, #2c7a4f var(--hid-tint), var(--hid-card)));
+}
+.theme-parcels {
+  background: linear-gradient(180deg, color-mix(in srgb, #8d6a45 var(--hid-tint), var(--hid-card)), color-mix(in srgb, #b98a58 var(--hid-tint), var(--hid-card)));
+}
 .theme-league {
-  background: repeating-linear-gradient(90deg, #1f7f3f 0 40px, #25914a 40px 80px);
+  background: repeating-linear-gradient(90deg, color-mix(in srgb, #1f7f3f var(--hid-tint), var(--hid-card)) 0 40px, color-mix(in srgb, #25914a var(--hid-tint), var(--hid-card)) 40px 80px);
 }
 .theme-league .card-body { padding-left: 28px; }
 .info-card h3 { font-size: 0.75rem; color: var(--hid-muted); margin: 12px 0 4px; font-weight: 500; }
@@ -126,20 +140,24 @@ small { color: var(--hid-muted); font-weight: 400; }
   padding: 10px 12px;
   border: 1px solid var(--hid-warn);
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--hid-warn) 12%, var(--hid-card));
 }
 .warnings details { border-left: 4px solid var(--hid-warn); padding-left: 10px; }
 .warnings summary { cursor: pointer; display: flex; flex-direction: column; }
-.warnings .muted { color: rgba(255, 255, 255, 0.8); }
 .warnings p { margin: 8px 0 0; font-size: 0.9rem; white-space: pre-line; }
 
 /* ---- Himmel ---- */
-.sky { position: relative; overflow: hidden; color: #fff; min-height: 300px; isolation: isolate; flex: 1; }
+.sky {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  isolation: isolate;
+  flex: 1;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sky-a) var(--hid-tint), var(--hid-card)), color-mix(in srgb, var(--sky-b) var(--hid-tint), var(--hid-card)));
+}
+.sky.nobg { background: none; min-height: 0; }
 .sky.compact { min-height: 0; }
-.sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.28)); z-index: 1; }
-.sky-layer { position: absolute; inset: 0; z-index: 0; container-type: size; }
+.sky-layer { position: absolute; inset: 0; z-index: 0; container-type: size; opacity: 0.7; }
 .sky-layer i { position: absolute; display: block; }
 .sky-content {
   position: relative;
@@ -149,7 +167,6 @@ small { color: var(--hid-muted); font-weight: 400; }
   gap: 16px;
   padding: 16px;
   min-height: inherit;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 .sky-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; opacity: 0.9; }
 .sky-main { flex: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -158,23 +175,13 @@ small { color: var(--hid-muted); font-weight: 400; }
 
 .sky-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
 .detail, .forecast, .panel {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--hid-glass);
+  border: 1px solid var(--hid-glass-border);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 12px;
 }
 .panel { padding: 12px 14px; }
-.panel h2 { color: rgba(255, 255, 255, 0.75); }
-.panel .metric-label { color: rgba(255, 255, 255, 0.75); }
-.panel small { color: rgba(255, 255, 255, 0.7); }
-.panel .chip { border-color: rgba(255, 255, 255, 0.35); }
-.panel .chip.low { border-color: #7bd88f; }
-.panel .chip.mid { border-color: #ffd166; }
-.panel .chip.high { border-color: #ff7b72; background: rgba(255, 123, 114, 0.22); }
-.panel .metric-value.ok { color: #7bd88f; }
-.panel .metric-value.warn { color: #ffd166; }
-.panel .metric-value.bad { color: #ff7b72; }
-.panel .muted { color: rgba(255, 255, 255, 0.75); }
 .detail { display: flex; flex-direction: column; padding: 8px 10px; }
 .detail-label { font-size: 0.7rem; opacity: 0.8; }
 .detail-value { font-size: 1.05rem; font-weight: 500; }
@@ -207,19 +214,19 @@ small { color: var(--hid-muted); font-weight: 400; }
   animation: spin 80s linear infinite;
 }
 .twilight .sun { top: auto; bottom: 30%; background: radial-gradient(circle, #fff1d6 0 35%, #ff9e4a 62%, rgba(255, 158, 74, 0) 74%); box-shadow: 0 0 60px 20px rgba(255, 140, 60, 0.45); }
-.moon { right: 10%; top: 10%; width: 54px; height: 54px; border-radius: 50%; box-shadow: inset -14px 0 0 0 #f4f1de; filter: drop-shadow(0 0 14px rgba(244, 241, 222, 0.6)); }
-.star { width: 2px; height: 2px; border-radius: 50%; background: #fff; animation: twinkle 3.5s ease-in-out infinite; }
+.moon { right: 10%; top: 10%; width: 54px; height: 54px; border-radius: 50%; box-shadow: inset -14px 0 0 0 #e3e0cf; filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.18)); }
+.star { width: 2px; height: 2px; border-radius: 50%; background: var(--hid-text); animation: twinkle 3.5s ease-in-out infinite; }
 
 .cloud {
-  left: -260px; border-radius: 999px; background: #fff; filter: blur(10px);
+  left: -260px; border-radius: 999px; background: color-mix(in srgb, var(--hid-card) 55%, #fff); filter: blur(10px);
   animation: drift linear infinite;
 }
-.cloud.dark { background: #5c6672; }
+.cloud.dark { background: color-mix(in srgb, var(--hid-text) 32%, var(--hid-card)); }
 
-.drop { top: -20px; width: 1.5px; height: 16px; background: linear-gradient(transparent, rgba(190, 215, 255, 0.85)); animation: fall linear infinite; }
-.flake { top: -10px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); animation: snow linear infinite; }
+.drop { top: -20px; width: 1.5px; height: 16px; background: linear-gradient(transparent, rgba(70, 120, 200, 0.7)); animation: fall linear infinite; }
+.flake { top: -10px; border-radius: 50%; background: color-mix(in srgb, var(--hid-text) 45%, transparent); animation: snow linear infinite; }
 
-.fog-band { left: -20%; width: 140%; height: 70px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent); filter: blur(14px); animation: sway 18s ease-in-out infinite alternate; }
+.fog-band { left: -20%; width: 140%; height: 70px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--hid-text) 14%, transparent), transparent); filter: blur(14px); animation: sway 18s ease-in-out infinite alternate; }
 .fog-band.slow { animation-duration: 28s; animation-direction: alternate-reverse; }
 
 .flash { inset: 0 !important; background: #fff; opacity: 0; animation: flash 9s infinite; }
